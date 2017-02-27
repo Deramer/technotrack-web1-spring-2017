@@ -1,0 +1,7 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<p>Only the author can delete the post 
+<a href='{% url 'blog:show_post' blog.id post.id %}'>{{ post.title }}</a> from the blog 
+<a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title }}</a>.</p>
+{% endblock %}

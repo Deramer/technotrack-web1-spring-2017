@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+{% if local_user %}
+<h1>Posts of user "<a href='{% url 'user:user_page' local_user.id %}'>{{ local_user.username }}</a>"</h1>
+{% endif %}
+
+<p>Sort by <a href='?order=updated{% if order_desc_updated_at %}&order_way=asc{% endif %}'>updated</a>,
+<a href='?order=title{% if order_desc_title %}&order_way=asc{% endif %}'>title</a></p>
+
+<form method='get'>
+	<input type='text' name='search' value='{{ search }}'>
+	<input type='submit' value='Search'>
+</form>
+
+{% if posts %}
+<ul>
+	{% for post in posts %}
+	<li><a href='{% url 'blog:show_post' post.blog.id post.id %}'>"{{ post.title }}"</a>,
+			blog <a href='{% url 'blog:show_blog' post.blog.id %}'>{{ post.blog.title }}</a>,
+	       	updated {{ post.updated_at }}</li>
+	{% endfor %}
+</ul>
+{% else %}
+{% if search == '' %}
+<p>There're no posts yet, be the first to add!</p>
+{% else %}
+<p>No posts found</p>
+{% endif %}
+{% endif %}
+{% endblock %}

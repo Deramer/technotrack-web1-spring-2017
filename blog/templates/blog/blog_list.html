@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h1>Blogs</h1>
+{% if user.is_authenticated %}
+<p><a href='{% url 'blog:create_blog' %}'>Create new blog.</a></p>
+{% endif %}
+
+<p>Sort by <a href='?order=updated{% if order_desc_updated_at %}&order_way=asc{% endif %}'>updated</a>,
+<a href='?order=title{% if order_desc_title %}&order_way=asc{% endif %}'>title</a></p>
+
+<p>Show <a href='?max=10'>10</a>,
+<a href='?max=20'>20</a>,
+<a href='?max=50'>50</a>
+blogs.</p>
+
+<form method='get'>
+	<input type='text' name='search' value='{{ search }}'>
+	<input type='submit' value='Search'>
+</form>
+
+{% if blog_list %}
+	<ul>
+	{% for blog in blog_list %}
+	<li><a href='{% url 'blog:show_blog' blog.id %}'>"{{ blog.title }}</a>", 
+		creator {{ blog.creator }},
+		updated {{ blog.updated_at }}{% if user == blog.creator %}, 
+		<a href='{% url 'blog:delete_blog' blog.id %}'>Delete</a>{% endif %}
+	</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No blogs are available.</p>
+{% endif %}
+{% endblock %}

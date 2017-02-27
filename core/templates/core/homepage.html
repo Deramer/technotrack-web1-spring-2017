@@ -1,0 +1,11 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<p>This is the home page.</p>
+{% if user.is_authenticated %}
+<p>Create your own <a href='{% url 'blog:index' %}'>Blog</a>!</p>
+{% else %}
+<p><a href='{% url 'core:login' %}'>Log in</a> or <a href='{% url 'core:register' %}'>Sign up</a>!</p>
+{% endif %}
+<p>View <a href='{% url 'blog:index' %}'>Blogs</a>.</p>
+{% endblock %}
