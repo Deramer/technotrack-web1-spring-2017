@@ -1,13 +1,15 @@
 {% extends "core/base.html" %}
+{% load static %}
+
+{% block add_css %}
+<link rel='stylesheet' href='{% static 'blog.css' %}'>
+{% endblock %}
 
 {% block content %}
 <h1>Blogs</h1>
 {% if user.is_authenticated %}
 <p><a href='{% url 'blog:create_blog' %}'>Create new blog.</a></p>
 {% endif %}
-
-<p>Sort by <a href='?order=updated{% if order_desc_updated_at %}&order_way=asc{% endif %}'>updated</a>,
-<a href='?order=title{% if order_desc_title %}&order_way=asc{% endif %}'>title</a></p>
 
 <p>Show <a href='?max=10'>10</a>,
 <a href='?max=20'>20</a>,
@@ -20,15 +22,20 @@ blogs.</p>
 </form>
 
 {% if blog_list %}
-	<ul>
+	<table class='blog-table'>
+	<tr>
+		<th class='title-col sort-col{% if order_desc_title or order_title %} sorted-col{% endif %}'><a href='?order=title{% if order_desc_title %}&order_way=asc{% endif %}'>Title</a></th>
+		<th class='creator-col'>Creator</th>
+		<th class='update-col sort-col{% if order_desc_updated_at or order_updated_at %} sorted-col{% endif %}'><a href='?order=updated{% if order_desc_updated_at %}&order_way=asc{% endif %}'>Last update</a></th>
+	</tr>
 	{% for blog in blog_list %}
-	<li><a href='{% url 'blog:show_blog' blog.id %}'>"{{ blog.title }}</a>", 
-		creator {{ blog.creator }},
-		updated {{ blog.updated_at }}{% if user == blog.creator %}, 
-		<a href='{% url 'blog:delete_blog' blog.id %}'>Delete</a>{% endif %}
-	</li>
+	<tr>
+		<td class='title-col'><a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title }}</a></td>
+		<td class='creator-col'><a href='{% url 'user:user_page' blog.creator.id %}'>{{ blog.creator }}</a></td>
+		<td class='update-col'>{{ blog.updated_at }}</td>
+	</tr>
 	{% endfor %}
-	</ul>
+	</table>
 {% else %}
 	<p>No blogs are available.</p>
 {% endif %}

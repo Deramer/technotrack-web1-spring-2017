@@ -9,6 +9,7 @@ Done:
 Tasks:
 - Comments: database representation, sort, html/css representation;
 - Files: uploading, (media/static)?..
+- Pages! (blogs, posts)
 
 Next step:
 - HTML/CSS.

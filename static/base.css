@@ -1,0 +1,52 @@
+body {
+	margin: 0;
+}
+
+#content {
+	margin: 8px;
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.header {
+	background: black;
+	color: white;
+	padding: 10px 15px;
+	margin: 0px;
+}
+
+.header-list {
+	margin: 5px 0px;
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 0px;
+}
+
+.header {
+	list-style: none;
+}
+
+.header li {
+	display: inline;
+	padding-right: 10px;
+}
+
+.header .header-user {
+	float: right;
+	padding-right: 0px;
+	padding-left: 15px;
+}
+
+.header li a {
+	color: white;
+}
+
+.header li a:visited {
+	color: white;
+}
+
+.header li a:hover {
+	color: gray;
+}

@@ -1,0 +1,55 @@
+.blog-table {
+	table-layout: fixed;
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 15px;
+}
+
+.blog-table tr {
+	border-bottom: 1px solid gray;
+}
+
+.blog-table th {
+	text-align: left;
+	padding: 8px 8px;
+}
+
+.blog-table td {
+	padding: 15px 10px;
+}
+
+.title-col {
+	max-width: 400px;
+}
+
+.creator-col {
+	max-width: 300px;
+}
+
+.update-col {
+	max-width: 300px;
+}
+
+.sort-col {
+	/*text-decoration-style: dashed;*/
+}
+
+.sort-col a, .sort-col a:visited {
+	color: #707070;
+	text-decoration: underline;
+}
+
+.sorted-col {
+	border-bottom: 1px solid white;
+	border-left: 1px solid gray;
+	border-right: 1px solid gray;
+	border-top: 1px solid gray;
+}
+
+.blog-table tr + tr:hover {
+	background: #d9d9d9;
+}
+
+.blog-table td a:visited {
+	color: blue;
+}
