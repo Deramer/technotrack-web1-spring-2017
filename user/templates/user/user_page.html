@@ -2,7 +2,11 @@
 
 {% block content %}
 <h2>{{ local_user.username }}</h2>
-<img src='/static/{{ local_user.avatar }}' alt='avatar'>
+{% if local_user.avatar %}
+<img src='{{ local_user.avatar.url }}' alt='avatar' height='160' width='160' style='float:right;'>
+{% else %}
+<p style='float:right;'>Avatar</p>
+{% endif %}
 <p>{% if local_user.first_name %}First name: {{ local_user.first_name }}{% endif %}</p>
 <p>{% if local_user.last_name %}Last name: {{ local_user.last_name }}{% endif %}</p>
 

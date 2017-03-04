@@ -5,6 +5,7 @@ from blog import views
 
 app_name = 'blog'
 urlpatterns = [ url(r'^$', views.BlogList.as_view(), name = 'index'),
+        url(r'^page(?P<page>\d+)/$', views.BlogList.as_view(), name = 'index_page'),
         url(r'^create/', views.CreateBlog.as_view(), name='create_blog'),
         url(r'^(?P<blog_id>\d+)/$', views.PostList.as_view(), name = 'show_blog'),
         url(r'^(?P<blog_id>\d+)/create', views.CreatePost.as_view(), name='create_post'),

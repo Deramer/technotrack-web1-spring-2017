@@ -13,8 +13,13 @@
 	<ul class='header-list'>
 		<li><a href='{% url 'core:home' %}'>Home</a></li>
 		<li><a href='{% url 'blog:index' %}'>Blogs</a></li>
+		<li><a href='{% url 'core:about' %}'>About</a></li>
 		{% if user.is_authenticated %}
 		<li class='header-user'><a href='{% url 'user:user_page' user.id %}'>{{ user.username }}</a></li>
+		<li class='header-user header-avatar'><a href='{% url 'user:user_page' user.id %}'>
+					{% if user.avatar %}
+					<img src='{{ user.avatar.url }}' alt='' width='30' height='30'>
+					{% endif %}</li>
 		<li class='header-user'><a href='{% url 'core:logout' %}'>Log out</a></li>
 		{% else %}
 		<li class='header-user'><a href='{% url 'core:register' %}'>Sign up</a></li>

@@ -34,13 +34,22 @@ class BlogList(ListView):
             threshold = int(self.request.GET['max'])
         except (KeyError, ValueError):
             pass
-        blogs = blogs[:threshold]
+        self.kwargs['pages_num'] = int(blogs.count()/threshold) + 1
+        if 'page' in self.kwargs and int(self.kwargs['page']) != 0:
+            blogs = blogs[(int(self.kwargs['page'])-1)*threshold : int(self.kwargs['page'])*threshold]
+        else:
+            blogs = blogs[:threshold]
         return blogs
 
     def get_context_data(self, **kwargs):
         context = super(BlogList, self).get_context_data()
         context['order_' + _get_order(self.request.GET).replace('-','desc_')] = True
         context['search'] = self.request.GET.get('search', '')
+        context['pages_num'] = self.kwargs['pages_num']     # yeah, I checked, get_queryset is called before get_context_data
+        try:
+            context['cur_page'] = int(self.kwargs.get('page', None))
+        except TypeError as e:
+            context['cur_page'] = None
         return context
 
 
@@ -136,8 +145,6 @@ class UpdatePost(UpdateView):
 
     def get_initial(self):
         init = super(UpdatePost, self).get_initial()
-        # What the hell is wrong with
-        # init['text'] = unescape(init['text']).replace(...) ?? Why init = {} here?
         init['text'] = unescape(get_object_or_404(Post, id=self.kwargs['post_id']).text.replace('<br>', '\n'))
         return init
     

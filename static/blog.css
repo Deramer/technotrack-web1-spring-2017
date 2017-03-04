@@ -53,3 +53,15 @@
 .blog-table td a:visited {
 	color: blue;
 }
+
+.pages_list {
+	list-style: none;
+}
+
+.pages_list li {
+	display: inline;
+}
+
+.pages_list li + li {
+	padding-left: 5px;
+}
