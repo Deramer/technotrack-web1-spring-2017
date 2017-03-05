@@ -1,4 +1,10 @@
 {% extends "core/base.html" %}
+{% load mptt_tags %}
+{% load static %}
+
+{% block add_css %}
+<link rel='stylesheet' href='{% static 'comments.css' %}'>
+{% endblock %}
 
 {% block content %}
 {% if blog %}
@@ -8,16 +14,44 @@
 {% endif %}
 {% if post %}
 	<h2>{{ post.title }}</h2>
-	<p>{{ post.text | safe }}</p>
+	<p>{{ post.text | safe}}</p>
 	{% if user == post.creator %}
 	<p><a href='{% url 'blog:update_post' blog.id post.id %}'>Update</a>   
 	<a href='{% url 'blog:delete_post' blog.id post.id %}'>Delete</a></p>
 	{% endif %}
 	<h3>Comments</h3>
 	{% if comments %}
-		{% for comment in comments %}
-			<p>{{ comment.text | safe }}</p>
-		{% endfor %}
+	{% recursetree comments %}
+		<div>
+			{% if node.status %}
+			<div class='comment'>
+				<div class='comment-author'>
+					<div class='comment-author-avatar'>
+						{% if node.creator.avatar %}
+						<img src='{{ node.creator.avatar.url }}'  alt=''>
+						{% endif %}
+					</div>
+					<div class='comment-author-text'>
+						<div><a href='{% url 'user:user_page' node.creator.id %}'>{{ node.creator }}</a></div>
+						<div>on {{ node.created_at }} said:</div>
+					</div>
+				</div>
+				<div class='comment-text'>{{ node.text | safe }}</div>
+			</div>
+			{% endif %}
+			<form method='post' class='comment-add'>
+				{% csrf_token %}
+				{{ form.text }}
+				<input type='hidden' name='parent_id' value='{{ node.id }}'>
+				<input type='submit' value='Comment'>
+			</form>
+			{% if not node.is_leaf_node %}
+			<div class='comment-shift {% if node.level|divisibleby:2 %}comment-color-first{% else %}comment-color-second{% endif %}'>
+				{{ children }}
+			</div>
+			{% endif %}
+		</div>
+	{% endrecursetree %}
 	{% else %}
 		<p>There're no comments yet. Be the first to add!</p>
 	{% endif %}
