@@ -1,5 +1,9 @@
 {% extends "core/base.html" %}
+{% load static %}
 
+{% block add_css %}
+<link rel='stylesheet' href='{% static 'post_list.css' %}'>
+{% endblock %}
 
 {% block content %}
 <h1>Posts in the blog "<a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title }}</a>"</h1>
@@ -19,13 +23,21 @@
 </form>
 
 {% if posts %}
-<ul>
 	{% for post in posts %}
-	<li><a href='{% url 'blog:show_post' blog.id post.id %}'>"{{ post.title }}"</a>,
-	       	creator {{ post.creator }},
-	       	updated {{ post.updated_at }}</li>
+	<div class='post'>
+		<div class='post-header'>
+			<a href='{% url 'blog:show_post' blog.id post.id %}'>"{{ post.title }}"</a>,
+			creator {{ post.creator }},
+			updated {{ post.updated_at }}
+		</div>
+		<div class='post-text'>
+			{{ post.text | safe }}
+		</div>
+		<div class='post-footer'>
+			<a href='{% url 'blog:show_post' blog.id post.id %}'>Read more</a>
+		</div>
+	</div>
 	{% endfor %}
-</ul>
 {% else %}
 {% if search == '' %}
 <p>There're no posts yet, be the first to add!</p>

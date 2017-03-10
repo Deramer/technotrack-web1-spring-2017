@@ -1,0 +1,36 @@
+.pagination {
+	list-style: none;
+	text-align: center;
+}
+
+.pagination li {
+	display: inline-block;
+	width: 24px;
+	height: 25px;
+	border: 1px solid gray;
+	margin-left: -6px;
+}
+
+.pagination a, .pagination .page-center {
+	position: relative;
+	top: 3px;
+}
+
+.pagination .disabled {
+	text-decoration: none;
+	color: black;
+}
+
+.pagination .active {
+	text-decoration: none;
+	color: white;
+}
+
+.pagination .active {
+	background-color: black;
+}
+
+.pagination a, .pagination a:visited {
+	color: blue;
+	text-decoration: none;
+}

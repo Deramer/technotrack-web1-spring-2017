@@ -1,0 +1,45 @@
+.comment {
+	border: 1px solid black;
+}
+
+.comment-shift {
+	padding-left: 40px;
+}
+
+.comment-add textarea {
+	max-width: 1000px;
+	max-height: 40px;
+}
+
+.comment-color-second {
+	background-color: #ffffff;
+}
+
+.comment-color-first {
+	background-color: #f0f0f0;
+}
+
+.comment-author {
+	position: relative;
+	margin-top: 3px;
+	margin-left: 3px;
+	margin-bottom: 3px;
+}
+
+.comment-author-avatar {
+	position: absolute;
+}
+
+.comment-author-avatar img {
+	width: 39px;
+	height: 39px;
+}
+
+.comment-author-text {
+	margin-left: 50px;
+}
+
+.comment-text {
+	margin-bottom: 3px;
+	margin-left: 3px;
+}

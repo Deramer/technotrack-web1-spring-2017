@@ -3,13 +3,16 @@
 Done:
 - Blog creation/deletion;
 - Post creation/updating/deletion;
-- Registration (except avatars), login, logout;
-- Search/sort of blogs/posts, user posts.
+- Registration, login, logout;
+- Search/sort of blogs/posts, pagination, user posts;
+- Tree of comments.
 
 Tasks:
-- Comments: database representation (mptt), sort, html/css representation;
-- Probably: files, which are not avatars;
-- Pages! (blogs, posts)
+- Model change: many-to-many fields instead of intermediate tables;
+- Change method of data keeping, save unescaped data;
+- Probably: files, which are not avatars.
 
-Next step:
-- HTML/CSS.
+Next steps:
+- HTML/CSS,
+- Hide reply field for comments/posts;
+- Likes/dislikes.

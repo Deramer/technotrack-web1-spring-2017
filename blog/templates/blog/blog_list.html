@@ -1,8 +1,10 @@
 {% extends "core/base.html" %}
 {% load static %}
+{% load core_extras %}
 
 {% block add_css %}
 <link rel='stylesheet' href='{% static 'blog.css' %}'>
+<link rel='stylesheet' href='{% static 'pagination.css' %}'>
 {% endblock %}
 
 {% block content %}
@@ -11,9 +13,10 @@
 <p><a href='{% url 'blog:create_blog' %}'>Create new blog.</a></p>
 {% endif %}
 
-<p>Show <a href='?max=10'>10</a>,
-<a href='?max=20'>20</a>,
-<a href='?max=50'>50</a>
+<p>Show <a href='{% produce_get max=2 %}'>2</a>,
+<a href='{% produce_get max=10 %}'>10</a>,
+<a href='{% produce_get max=20 %}'>20</a>,
+<a href='{% produce_get max=50 %}'>50</a>
 blogs.</p>
 
 <form method='get'>
@@ -24,9 +27,10 @@ blogs.</p>
 {% if blog_list %}
 	<table class='blog-table'>
 	<tr>
-		<th class='title-col sort-col{% if order_desc_title or order_title %} sorted-col{% endif %}'><a href='?order=title{% if order_desc_title %}&order_way=asc{% endif %}'>Title</a></th>
+		<th class='title-col sort-col{% if order_desc_title or order_title %} sorted-col{% endif %}'><a href='{% if order_desc_title %}{% produce_get order_way="asc" order="title" %}{% else %}{% produce_get order="title" order_way="desc" %}{% endif %}'>Title</a></th>
 		<th class='creator-col'>Creator</th>
-		<th class='update-col sort-col{% if order_desc_updated_at or order_updated_at %} sorted-col{% endif %}'><a href='?order=updated{% if order_desc_updated_at %}&order_way=asc{% endif %}'>Last update</a></th>
+		<th class='update-col sort-col{% if order_desc_updated_at or order_updated_at %} sorted-col{% endif %}'>
+			<a href='{% if order_desc_updated_at %}{% produce_get order_way="asc" order="updated" %}{% else %}{% produce_get order="updated" order_way="desc"%}{% endif %}'>Last update</a></th>
 	</tr>
 	{% for blog in blog_list %}
 	<tr>
@@ -36,37 +40,9 @@ blogs.</p>
 	</tr>
 	{% endfor %}
 	</table>
-	{% if pages_num and cur_page %}
-	<ul class='pages_list'>
-		{% if cur_page == 1 %}
-		<li class='cur-page'>1</li>
-		{% else %}
-		<li class='page-num'><a href='{% url 'blog:index_page' 1 %}'>1</a></li>
-		{% endif %}
-		{% if pages_num > 1 and cur_page == 2 %}
-		<li class='cur-page'>2</li>
-		{% else %}
-		<li class='page-num'><a href='{% url 'blog:index_page' 2 %}'>2</a></li>
-		{% endif %}
-		{% if cur_page > 4  %}
-		<li>...</li>
-		{% elif pages_num > 4 %}
-		{% if cur_page == 3 %}
-		<li class='cur-page'>3</li>
-		<li class='page-num'><a href='{% url 'blog:index_page' 4 %}'>4</a></li>
-		{% else %}
-		<li class='page-num'><a href='{% url 'blog:index_page' 3 %}'>3</a></li>
-		<li class='cur-page'>4</li>
-		{% endif %}
-		{% if pages_num > 5 %}
-		<li>...</li>
-		<li><a href='{% url 'blog:index_page' pages_num %}'>{{ pages_num }}</a></li>
-		{% else %}
-		<li><a href='{% url 'blog:index_page' 5 %}'>5</a></li>
-		{% endif %}
-		{% endif %}
-	</ul>
-	{% endif %}
+
+	{% include 'core/pagination.html' %}
+
 {% else %}
 	<p>No blogs are available.</p>
 {% endif %}

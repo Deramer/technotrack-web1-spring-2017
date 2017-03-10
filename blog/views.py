@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.forms import ModelForm, Textarea
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -34,24 +35,25 @@ class BlogList(ListView):
         threshold = 10
         try:
             threshold = int(self.request.GET['max'])
+            threshold = threshold if threshold > 0 else 10
         except (KeyError, ValueError):
             pass
-        self.kwargs['pages_num'] = int(blogs.count()/threshold) + 1
-        if 'page' in self.kwargs and int(self.kwargs['page']) != 0:
-            blogs = blogs[(int(self.kwargs['page'])-1)*threshold : int(self.kwargs['page'])*threshold]
-        else:
-            blogs = blogs[:threshold]
+        self.kwargs['paginator'] = Paginator(blogs, threshold)
+        try:
+            blogs = self.kwargs['paginator'].page(self.request.GET['page']).object_list
+        except (KeyError, ValueError, EmptyPage, PageNotAnInteger):
+            blogs = self.kwargs['paginator'].page(1).object_list
         return blogs
 
     def get_context_data(self, **kwargs):
         context = super(BlogList, self).get_context_data()
         context['order_' + _get_order(self.request.GET).replace('-','desc_')] = True
         context['search'] = self.request.GET.get('search', '')
-        context['pages_num'] = self.kwargs['pages_num']     # yeah, I checked, get_queryset is called before get_context_data
         try:
-            context['cur_page'] = int(self.kwargs.get('page', None))
-        except TypeError as e:
-            context['cur_page'] = None
+            context['page_obj'] = self.kwargs['paginator'].page(int(self.request.GET['page']))     # yeah, I checked, get_queryset is called before get_context_data
+        except (KeyError, ValueError, EmptyPage, PageNotAnInteger):
+            context['page_obj'] = self.kwargs['paginator'].page(1)
+        context['unpaged_link'] = reverse('blog:index')
         return context
 
 

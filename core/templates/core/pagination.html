@@ -1,0 +1,24 @@
+{% load core_extras %}
+{% if page_obj %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+	<li><a href={% produce_get page=page_obj.previous_page_number %}>&laquo;</a></li>
+    {% else %}
+    <li class="disabled"><div class='page-center'>&laquo;</div></li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% ifequal num page_obj.number %}
+      <li class="active"><div class='page-center'>{{ num }}</div></li>
+      {% else %}
+        <li><a href="{% produce_get page=num %}">{{ num }}</a></li>
+      {% endifequal %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+	<li><a href={% produce_get page=page_obj.next_page_number %}>&raquo;</a></li>
+    {% else %}
+    <li class="disabled"><div class='page-center'>&raquo;</div></li>
+    {% endif %}
+  <ul>
+{% endif %}
