@@ -19,7 +19,7 @@
 		<li class='header-user header-avatar'><a href='{% url 'user:user_page' user.id %}'>
 					{% if user.avatar %}
 					<img src='{{ user.avatar.url }}' alt='' width='30' height='30'>
-					{% endif %}</li>
+					{% endif %}</a></li>
 		<li class='header-user'><a href='{% url 'core:logout' %}'>Log out</a></li>
 		{% else %}
 		<li class='header-user'><a href='{% url 'core:register' %}'>Sign up</a></li>

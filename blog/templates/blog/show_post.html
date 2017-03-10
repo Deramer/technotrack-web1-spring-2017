@@ -8,13 +8,13 @@
 
 {% block content %}
 {% if blog %}
-<h1>Blog "<a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title }}</a>"</h1>
+<h1>Blog "<a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title|escape }}</a>"</h1>
 {% else %}
 <p>Blog is not available</p>
 {% endif %}
 {% if post %}
-	<h2>{{ post.title }}</h2>
-	<p>{{ post.text | safe}}</p>
+	<h2>{{ post.title|escape }}</h2>
+	<p>{{ post.text|escape|linebreaksbr}}</p>
 	{% if user == post.creator %}
 	<p><a href='{% url 'blog:update_post' blog.id post.id %}'>Update</a>   
 	<a href='{% url 'blog:delete_post' blog.id post.id %}'>Delete</a></p>
@@ -24,7 +24,7 @@
 	{% recursetree comments %}
 		<div>
 			{% if node.status %}
-			<div class='comment'>
+			<div id='comment-{{ node.id }}' class='comment'>
 				<div class='comment-author'>
 					<div class='comment-author-avatar'>
 						{% if node.creator.avatar %}
@@ -32,11 +32,11 @@
 						{% endif %}
 					</div>
 					<div class='comment-author-text'>
-						<div><a href='{% url 'user:user_page' node.creator.id %}'>{{ node.creator }}</a></div>
+						<div><a href='{% url 'user:user_page' node.creator.id %}'>{{ node.creator.username|escape }}</a></div>
 						<div>on {{ node.created_at }} said:</div>
 					</div>
 				</div>
-				<div class='comment-text'>{{ node.text | safe }}</div>
+				<div class='comment-text'>{{ node.text|escape|linebreaksbr }}</div>
 			</div>
 			{% endif %}
 			<form method='post' class='comment-add'>

@@ -8,8 +8,6 @@ Done:
 - Tree of comments.
 
 Tasks:
-- Model change: many-to-many fields instead of intermediate tables;
-- Change method of data keeping, save unescaped data;
 - Probably: files, which are not avatars.
 
 Next steps:

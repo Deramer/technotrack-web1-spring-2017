@@ -91,18 +91,18 @@ class CommentForm(ModelForm):
         widgets= {'text': Textarea(attrs={'cols': 100, 'rows': 2})}
 
 
+@method_decorator(login_required, name='post')
 class PostView(CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/show_post.html'
-
+    
     def post(self, request, *args, **kwargs):
         try:
             self.kwargs['tree_parent'] = Comment.objects.get(id=int(request.POST['parent_id']))
         except (KeyError, ValueError, ObjectDoesNotExist):
             return self.form_invalid(self.get_form())
         return super(PostView, self).post(request, *args, **kwargs)
-
 
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
@@ -119,7 +119,6 @@ class PostView(CreateView):
     def form_valid(self, form):
         form.instance.creator = self.request.user
         form.instance.parent = self.kwargs['tree_parent']
-        form.instance.text = escape(form.instance.text).replace('\n', '<br>')
         return super(PostView, self).form_valid(form)
 
     def get_success_url(self):
@@ -134,7 +133,6 @@ class CreateBlog(CreateView):
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
-        form.instance.title = escape(form.instance.title)
         return super(CreateBlog, self).form_valid(form)
 
     def get_success_url(self):
@@ -150,7 +148,6 @@ class CreatePost(CreateView):
     def form_valid(self, form):
         form.instance.creator = self.request.user
         form.instance.blog = get_object_or_404(Blog, id=self.kwargs['blog_id'])
-        form.instance.text = escape(form.instance.text).replace('\n', '<br>')
         return super(CreatePost, self).form_valid(form)
 
     def get_success_url(self):
@@ -175,15 +172,6 @@ class UpdatePost(UpdateView):
             return super(UpdatePost, self).dispatch(request, *args, **kwargs)
         else:
             return redirect('blog:post_update_forbidden', blog_id=self.kwargs['blog_id'], post_id=self.kwargs['post_id'])
-
-    def get_initial(self):
-        init = super(UpdatePost, self).get_initial()
-        init['text'] = unescape(get_object_or_404(Post, id=self.kwargs['post_id']).text.replace('<br>', '\n'))
-        return init
-    
-    def form_valid(self, form):
-        form.instance.text = escape(form.instance.text).replace('\n', '<br>')
-        return super(UpdatePost, self).form_valid(form)
 
 
 class PostUpdateForbidden(TemplateView):

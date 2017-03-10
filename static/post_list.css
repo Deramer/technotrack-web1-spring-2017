@@ -1,0 +1,21 @@
+.post {
+	position: relative;
+	border-bottom: 2px solid black;
+	max-height: 500px;
+	overflow-y: hidden;
+}
+
+.post-text {
+	position: relative;
+}
+
+.post-text:after {
+	display: none;
+	content: "";
+	position: absolute;
+	top: 0px; bottom: 0px; left: 0px; right: 0px;
+	box-shadow: inset 0px -130px 50px -100px #fff;
+	pointer-events: none;
+}
+
+
