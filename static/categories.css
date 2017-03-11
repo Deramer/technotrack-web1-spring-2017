@@ -1,0 +1,29 @@
+.categories {
+	padding: 15px;
+	border: 1px solid blue;
+	list-style: none;
+}
+
+.categories li {
+	display: inline-block;
+	padding: 7px;
+	margin: 0px 3px;
+}
+
+.categories a, .categories a:visited {
+	color: blue;
+	text-decoration: none;
+}
+
+.category {
+	border: 1px solid black;
+	border-radius: 30%;
+}
+
+.category:hover {
+	background-color: gray;
+}
+
+.category-chosen {
+	background-color: black;
+}

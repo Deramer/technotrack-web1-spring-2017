@@ -15,7 +15,7 @@ from django.utils.html import escape
 
 from html import unescape
 
-from .models import Blog, Post, Comment
+from .models import Blog, Post, Comment, Category
 
 
 def _get_order(get):
@@ -29,6 +29,8 @@ def _get_order(get):
 class BlogList(ListView):
     def get_queryset(self):
         blogs = Blog.objects
+        if 'tag' in self.request.GET:
+            blogs = blogs.filter(categories__title__in = self.request.GET.getlist('tag')).distinct()
         if 'search' in self.request.GET:
             blogs = blogs.filter(title__icontains = self.request.GET['search'])
         blogs = blogs.order_by(_get_order(self.request.GET))
@@ -54,6 +56,7 @@ class BlogList(ListView):
         except (KeyError, ValueError, EmptyPage, PageNotAnInteger):
             context['page_obj'] = self.kwargs['paginator'].page(1)
         context['unpaged_link'] = reverse('blog:index')
+        context['categories'] = Category.objects.all()
         return context
 
 
@@ -88,7 +91,7 @@ class CommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['text',]
-        widgets= {'text': Textarea(attrs={'cols': 100, 'rows': 2})}
+        widgets = {'text': Textarea(attrs={'cols': 100, 'rows': 2})}
 
 
 @method_decorator(login_required, name='post')
@@ -128,7 +131,7 @@ class PostView(CreateView):
 @method_decorator(login_required, name='dispatch')
 class CreateBlog(CreateView):
     model = Blog
-    fields = ['title',]
+    fields = ['title', 'categories',]
     template_name = 'blog/create_blog.html'
 
     def form_valid(self, form):
