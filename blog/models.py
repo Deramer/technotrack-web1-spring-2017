@@ -3,11 +3,19 @@ from django.conf import settings
 from mptt.models import MPTTModel, TreeForeignKey
 
 
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return str(self.title)
+
+
 class Blog(models.Model):
     title = models.CharField(max_length=255)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    categories = models.ManyToManyField(Category)
 
     def __str__(self):
         return str(self.title)
@@ -49,8 +57,20 @@ class Post(models.Model):
 class Posts_likes(models.Model):
     post = models.ForeignKey(Post, models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
+    
+    class StatusEnum:
+        LIKE = 1
+        DISLIKE = -1
+    
+    status = models.IntegerField()
 
 
 class Comments_likes(models.Model):
     comment = models.ForeignKey(Comment, models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
+    
+    class StatusEnum:
+        LIKE = 1
+        DISLIKE = -1
+    
+    status = models.IntegerField()
