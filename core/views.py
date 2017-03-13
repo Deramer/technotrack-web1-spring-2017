@@ -8,6 +8,7 @@ from django.views.generic.base import TemplateView
 from django.shortcuts import render
 
 from user.models import User
+from blog.models import Blog, Post, Comment
 
 
 class UserForm(ModelForm):
@@ -37,6 +38,13 @@ class CreateUser(CreateView):
 
 class HomePageView(TemplateView):
     template_name = 'core/homepage.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        context['blog_num'] = Blog.objects.count()
+        context['post_num'] = Post.objects.count()
+        context['comment_num'] = Comment.objects.count()
+        return context
 
 
 class AboutPage(TemplateView):

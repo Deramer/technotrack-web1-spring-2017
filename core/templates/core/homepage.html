@@ -8,4 +8,7 @@
 <p><a href='{% url 'core:login' %}'>Log in</a> or <a href='{% url 'core:register' %}'>Sign up</a>!</p>
 {% endif %}
 <p>View <a href='{% url 'blog:index' %}'>Blogs</a>.</p>
+<p>Current number of blogs: {{ blog_num }}</p>
+<p>Current number of posts: {{ post_num }}</p>
+<p>Current number of comments: {{ comment_num }}</p>
 {% endblock %}
