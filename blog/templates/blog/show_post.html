@@ -6,6 +6,11 @@
 <link rel='stylesheet' href='{% static 'comments.css' %}'>
 {% endblock %}
 
+{% block add_js %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src='{% static 'js/comments.js' %}'></script>
+{% endblock %}
+
 {% block content %}
 {% if blog %}
 <h1>Blog "<a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title|escape }}</a>"</h1>
@@ -37,14 +42,21 @@
 					</div>
 				</div>
 				<div class='comment-text'>{{ node.text|escape|linebreaksbr }}</div>
+				<div class='comment-footer'>
+					<div id='comment-{{ node.id }}-reply' class='comment-reply'>Reply</div>
+				</div>
 			</div>
+			{% else %}
+			<div id='comment-{{ node.id }}-reply' class='comment-reply comment-root-reply'>Reply</div>
 			{% endif %}
+			{% comment 'Non-js reply field' %}
 			<form method='post' class='comment-add'>
 				{% csrf_token %}
 				{{ form.text }}
 				<input type='hidden' name='parent_id' value='{{ node.id }}'>
 				<input type='submit' value='Comment'>
 			</form>
+			{% endcomment %}
 			{% if not node.is_leaf_node %}
 			<div class='comment-shift {% if node.level|divisibleby:2 %}comment-color-first{% else %}comment-color-second{% endif %}'>
 				{{ children }}

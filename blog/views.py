@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.forms import ModelForm, Textarea
+from django import forms
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
@@ -27,6 +28,7 @@ def _get_order(get):
     return order
 
 class BlogList(ListView):
+
     def get_queryset(self):
         blogs = Blog.objects
         if 'tag' in self.request.GET:
@@ -87,30 +89,16 @@ class PostList(ListView):
         return context
 
 
-class CommentForm(ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['text',]
-        widgets = {'text': Textarea(attrs={'cols': 100, 'rows': 2})}
-
-
-@method_decorator(login_required, name='post')
-class PostView(CreateView):
-    model = Comment
-    form_class = CommentForm
+class PostView(DetailView):
+    model = Post
+    context_object_name = 'post'
+    pk_url_kwarg = 'post_id'
     template_name = 'blog/show_post.html'
-    
-    def post(self, request, *args, **kwargs):
-        try:
-            self.kwargs['tree_parent'] = Comment.objects.get(id=int(request.POST['parent_id']))
-        except (KeyError, ValueError, ObjectDoesNotExist):
-            return self.form_invalid(self.get_form())
-        return super(PostView, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
-        context['post'] = post = get_object_or_404(Post, id=self.kwargs['post_id'])
+        post = get_object_or_404(Post, id=self.kwargs['post_id'])
         if post.comments is None:
             root_comment = Comment(creator=None, text='', status=Comment.StatusEnum.ROOT)
             root_comment.save()
@@ -118,14 +106,6 @@ class PostView(CreateView):
             post.save()
         context['comments'] = post.comments.get_descendants(include_self=True)
         return context
-        
-    def form_valid(self, form):
-        form.instance.creator = self.request.user
-        form.instance.parent = self.kwargs['tree_parent']
-        return super(PostView, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse('blog:show_post', kwargs={'blog_id': self.kwargs['blog_id'], 'post_id': self.kwargs['post_id']})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -238,3 +218,46 @@ class BlogDeletionForbidden(TemplateView):
         context = super(BlogDeletionForbidden, self).get_context_data(**kwargs)
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
         return context
+
+
+class CommentForm(ModelForm):
+    parent_id = forms.IntegerField(widget = forms.HiddenInput(), initial = -1)
+
+    class Meta:
+        model = Comment
+        fields = ['text', 'parent_id',]
+    
+    def clean_parent_id(self):
+        parent_id = self.cleaned_data['parent_id']
+        try:
+            if int(parent_id) < 0:
+                raise ValidationError('Invalid parent_id, < 0')
+        except:
+            raise ValidationError('Invalid parent_id, not an int %(parent_id)s', params={'parent_id': parent_id})
+        try:
+            Comment.objects.get(id=int(parent_id))
+        except ObjectDoesNotExist:
+            raise ValidationError('No such parent in database, parent_id %(parent_id)s', params={'parent_id': parent_id})
+        return parent_id
+
+
+@method_decorator(login_required, name='dispatch')
+class GetCommentForm(CreateView):
+    template_name = 'blog/comment_form.html'
+    form_class = CommentForm
+
+    def get_initial(self):
+        initial = super(GetCommentForm, self).get_initial()
+        try:
+            initial['parent_id'] = int(self.request.GET['parent_id'])
+        except (ValueError, KeyError):
+            initial['parent_id'] = -1
+        return initial
+    
+    def get_success_url(self):
+        return reverse('blog:show_post', kwargs={'blog_id': self.kwargs['blog_id'], 'post_id': self.kwargs['post_id']})
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        form.instance.parent = Comment.objects.get(id=int(form.cleaned_data['parent_id']))
+        return super(GetCommentForm, self).form_valid(form)

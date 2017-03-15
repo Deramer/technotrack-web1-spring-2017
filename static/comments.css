@@ -7,8 +7,11 @@
 }
 
 .comment-add textarea {
-	max-width: 1000px;
+	width: 100%;
 	max-height: 40px;
+	box-sizing: border-box;
+	padding: 0px;
+	margin: 0px;
 }
 
 .comment-color-second {
@@ -42,4 +45,17 @@
 .comment-text {
 	margin-bottom: 3px;
 	margin-left: 3px;
+}
+
+.comment-footer {
+	margin: 3px;
+}
+
+.comment-reply {
+	color: blue;
+	text-decoration: underline;
+}
+
+.comment-reply:hover {
+	cursor: pointer;
 }

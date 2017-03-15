@@ -1,0 +1,9 @@
+{% load widget_tweaks %}
+
+<form method='POST' action='ajax_comment_form' class='comment-add'>
+	{% csrf_token %}
+	{{ form.parent_id }}
+	{% render_field form.text rows='2' cols='' %}
+	{{ form.errors }}
+	<input type='submit' value='Reply'>
+</form>

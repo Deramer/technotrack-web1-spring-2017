@@ -18,4 +18,5 @@ urlpatterns = [ url(r'^$', views.BlogList.as_view(), name = 'index'),
         url(r'^(?P<blog_id>\d+)/(?P<post_id>\d+)/delete/', views.DeletePost.as_view(), name='delete_post'),
         url(r'^(?P<blog_id>\d+)/(?P<post_id>\d+)/deletion_forbidden/', 
             views.PostDeletionForbidden.as_view(), name='post_deletion_forbidden'),
+        url(r'^(?P<blog_id>\d+)/(?P<post_id>\d+)/ajax_comment_form', views.GetCommentForm.as_view(), name='comment_form'),
 ]
