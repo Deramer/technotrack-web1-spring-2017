@@ -9,10 +9,9 @@ Done:
 - Hidden comment field.
 
 Tasks:
-- Status choices instead of enums;
 - Creating posts in dialogue window;
 - Real-time viewing of new comments;
-- Parse get parameters for search in one distinct form, with extensive use of js;
+- Parse GET parameters for search in one distinct form, with extensive use of js;
 - Use CSS to make three different representations of the site: for computers, tablets and phones;
 - Explore and use widget-tweaks;
 - Probably: files, which are not avatars.

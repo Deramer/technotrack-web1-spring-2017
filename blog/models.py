@@ -29,14 +29,24 @@ class Comment(MPTTModel):
     created_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
     likes_num = models.IntegerField(blank=True, default=0)
-
+    ROOT_COMMENT = 0
+    USUAL_COMMENT = 0
+    DELETED_COMMENT = 0
+    DOWNVOTED_COMMENT = 0
+    STATUS_CHOICES = (
+            (ROOT_COMMENT, 'Root comment'),
+            (USUAL_COMMENT, 'Usual comment'), 
+            (DELETED_COMMENT, 'Deleted comment'),
+            (DOWNVOTED_COMMENT, 'Downvoted comment'),
+    )
+    """
     class StatusEnum:
         ROOT = 0
         USUAL = 1
         DELETED = 2
         DOWNVOTED = 3
-    
-    status = models.IntegerField(blank=True, default=StatusEnum.USUAL)
+    """
+    status = models.IntegerField(blank=True, default=USUAL_COMMENT, choices=STATUS_CHOICES)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
 
     def __str__(self):
@@ -60,20 +70,22 @@ class Post(models.Model):
 class Posts_likes(models.Model):
     post = models.ForeignKey(Post, models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
-    
-    class StatusEnum:
-        LIKE = 1
-        DISLIKE = -1
-    
-    status = models.IntegerField()
+    LIKE_STATUS = 1
+    DISLIKE_STATUS = -1
+    STATUS_CHOICES = (
+            (DISLIKE_STATUS, 'Dislike'),
+            (LIKE_STATUS, 'Like'),
+    )
+    status = models.IntegerField(blank=True, default=LIKE_STATUS, choices=STATUS_CHOICES)
 
 
 class Comments_likes(models.Model):
     comment = models.ForeignKey(Comment, models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
-    
-    class StatusEnum:
-        LIKE = 1
-        DISLIKE = -1
-    
-    status = models.IntegerField()
+    LIKE_STATUS = 1
+    DISLIKE_STATUS = -1
+    STATUS_CHOICES = (
+            (DISLIKE_STATUS, 'Dislike'),
+            (LIKE_STATUS, 'Like'),
+    )
+    status = models.IntegerField(blank=True, default=LIKE_STATUS, choices=STATUS_CHOICES)

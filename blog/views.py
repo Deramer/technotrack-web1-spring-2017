@@ -100,7 +100,7 @@ class PostView(DetailView):
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
         post = get_object_or_404(Post, id=self.kwargs['post_id'])
         if post.comments is None:
-            root_comment = Comment(creator=None, text='', status=Comment.StatusEnum.ROOT)
+            root_comment = Comment(creator=None, text='', status=Comment.ROOT_COMMENT)
             root_comment.save()
             post.comments = root_comment
             post.save()
