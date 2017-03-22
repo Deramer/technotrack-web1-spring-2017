@@ -30,9 +30,9 @@ class Comment(MPTTModel):
     text = models.TextField()
     likes_num = models.IntegerField(blank=True, default=0)
     ROOT_COMMENT = 0
-    USUAL_COMMENT = 0
-    DELETED_COMMENT = 0
-    DOWNVOTED_COMMENT = 0
+    USUAL_COMMENT = 1
+    DELETED_COMMENT = 2
+    DOWNVOTED_COMMENT = 3
     STATUS_CHOICES = (
             (ROOT_COMMENT, 'Root comment'),
             (USUAL_COMMENT, 'Usual comment'), 
