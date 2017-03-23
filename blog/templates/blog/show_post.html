@@ -5,6 +5,7 @@
 
 {% block add_css %}
 <link rel='stylesheet' href='{% static 'comments.css' %}'>
+<link rel='stylesheet' href='{% static 'post.css' %}'>
 {% endblock %}
 
 {% block add_js %}
@@ -21,6 +22,23 @@
 {% if post %}
 	<h2>{{ post.title|escape }}</h2>
 	<p>{{ post.text|escape|linebreaksbr}}</p>
+	<div class='post-footer'>
+		<div class='post-author-avatar'>
+			{% if post.creator.avatar %}
+			<img src='{{ post.creator.avatar.url }}'  alt=''>
+			{% endif %}
+		</div>
+		<div class='post-author'><a href='{% url 'user:user_page' post.creator.id %}'>{{ post.creator.username|escape }}</a></div>
+		<div class='post-created-at'>{{ post.created_at }}</div>
+		<div id='comment-{{ root_comment.id }}-dislike' class='comment-like'>&darr;</div>
+		<div id='comment-{{ root_comment.id }}-like' class='comment-like'>&uarr;</div>
+		<div id='comment-{{ root_comment.id }}-counter' class='comment-counter 
+		{% if root_comment.likes_num > 0 %}comment-counter-positive{% endif %}
+		{% if root_comment.likes_num == 0 %}comment-counter-zero{% endif %}
+		{% if root_comment.likes_num < 0 %}comment-counter-negative{% endif %}
+			'>{{ root_comment.likes_num|abs }}</div>
+		<div id='comment-{{ root_comment.id }}-reply' class='post-reply js-reply'>Reply</div>
+	</div>
 	{% if user == post.creator %}
 	<p><a href='{% url 'blog:update_post' blog.id post.id %}'>Update</a>   
 	<a href='{% url 'blog:delete_post' blog.id post.id %}'>Delete</a></p>
@@ -46,7 +64,7 @@
 				</div>
 				<div class='comment-text'>{{ node.text|escape|linebreaksbr }}</div>
 				<div class='comment-footer'>
-					<div id='comment-{{ node.id }}-reply' class='comment-reply'>Reply</div>
+					<div id='comment-{{ node.id }}-reply' class='comment-reply js-reply'>Reply</div>
 					<div id='comment-{{ node.id }}-dislike' class='comment-like'>&darr;</div>
 					<div id='comment-{{ node.id }}-like' class='comment-like'>&uarr;</div>
 					<div id='comment-{{ node.id }}-counter' class='comment-counter 
@@ -56,11 +74,15 @@
 						'>{{ node.likes_num|abs }}</div>
 				</div>
 			</div>
-			{% else %}
-			<div id='comment-{{ node.id }}-reply' class='comment-reply comment-root-reply'>Reply</div>
-			{% endif %}
 			{% if not node.is_leaf_node %}
-			<div class='comment-shift {% if node.level|divisibleby:2 %}comment-color-first{% else %}comment-color-second{% endif %}'>
+			<div class='comment-shift 
+				{% if node.level|divisibleby:2 %}comment-color-first{% else %}comment-color-second{% endif %}
+				'>
+				{{ children }}
+			</div>
+			{% endif %}
+			{% else %}
+			<div>
 				{{ children }}
 			</div>
 			{% endif %}

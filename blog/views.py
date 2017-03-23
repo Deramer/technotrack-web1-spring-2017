@@ -107,6 +107,7 @@ class PostView(DetailView):
             post.comments = root_comment
             post.save()
         context['comments'] = post.comments.get_descendants(include_self=True)
+        context['root_comment'] = post.comments
         return context
 
 

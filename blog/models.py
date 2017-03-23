@@ -47,6 +47,8 @@ class Comment(MPTTModel):
         return self.text
 
     def update_likes_num(self):
+        if self.status == self.ROOT_COMMENT:
+            self.likes_num = CommentsLikes.objects.filter(comment=self.id).aggregate(models.Sum('status'))['status__sum']
         if self.status != self.ROOT_COMMENT and self.status != self.DELETED_COMMENT:
             self.likes_num = CommentsLikes.objects.filter(comment=self.id).aggregate(models.Sum('status'))['status__sum']
             if self.likes_num <= self.DOWNVOTED_EDGE:
@@ -68,18 +70,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class PostsLikes(models.Model):
-    post = models.ForeignKey(Post, models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
-    LIKE_STATUS = 1
-    DISLIKE_STATUS = -1
-    STATUS_CHOICES = (
-            (DISLIKE_STATUS, 'Dislike'),
-            (LIKE_STATUS, 'Like'),
-    )
-    status = models.IntegerField(blank=True, default=LIKE_STATUS, choices=STATUS_CHOICES)
 
 
 class CommentsLikes(models.Model):

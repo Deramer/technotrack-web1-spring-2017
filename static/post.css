@@ -1,0 +1,49 @@
+.post-footer {
+	position: relative;
+	margin-top: 3px;
+	margin-left: 3px;
+	margin-bottom: 5px;
+	/*height: 19px;*/
+}
+
+.post-author-avatar {
+	position: absolute;
+	top: 4px;
+}
+
+.post-author-avatar img {
+	width: 16px;
+	height: 16px;
+}
+
+.post-author, .post-created-at {
+	display: inline-block;
+	font-size: 11px;
+	vertical-align: middle;
+	color: #303030;
+}
+
+.post-author a, .post-author a:visited {
+	display: inline-block;
+	font-size: 11px;
+	vertical-align: middle;
+	color: blue;
+}
+
+.post-author {
+	margin-left: 20px;
+}
+
+.post-created-at {
+	margin-left: 15px;
+}
+
+.post-reply {
+	color: blue;
+	text-decoration: underline;
+	margin: 5px 0px;
+}
+
+.post-reply:hover {
+	cursor: pointer;
+}

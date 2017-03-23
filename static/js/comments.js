@@ -1,5 +1,5 @@
 $( document ).ready(function () {
-	$( '.comment-reply' ).click(show_reply_form);
+	$( '.js-reply' ).click(show_reply_form);
 	$( '.comment-like' ).click(like_request);
 })
 
