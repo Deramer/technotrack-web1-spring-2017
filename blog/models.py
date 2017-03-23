@@ -33,24 +33,27 @@ class Comment(MPTTModel):
     USUAL_COMMENT = 1
     DELETED_COMMENT = 2
     DOWNVOTED_COMMENT = 3
+    DOWNVOTED_EDGE = -2
     STATUS_CHOICES = (
             (ROOT_COMMENT, 'Root comment'),
             (USUAL_COMMENT, 'Usual comment'), 
             (DELETED_COMMENT, 'Deleted comment'),
             (DOWNVOTED_COMMENT, 'Downvoted comment'),
     )
-    """
-    class StatusEnum:
-        ROOT = 0
-        USUAL = 1
-        DELETED = 2
-        DOWNVOTED = 3
-    """
     status = models.IntegerField(blank=True, default=USUAL_COMMENT, choices=STATUS_CHOICES)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
 
     def __str__(self):
         return self.text
+
+    def update_likes_num(self):
+        if self.status != self.ROOT_COMMENT and self.status != self.DELETED_COMMENT:
+            self.likes_num = CommentsLikes.objects.filter(comment=self.id).aggregate(models.Sum('status'))['status__sum']
+            if self.likes_num <= self.DOWNVOTED_EDGE:
+                self.status = self.DOWNVOTED_COMMENT
+            else:
+                self.status = self.USUAL_COMMENT
+        self.save()
 
 
 class Post(models.Model):
@@ -67,7 +70,7 @@ class Post(models.Model):
         return self.title
 
 
-class Posts_likes(models.Model):
+class PostsLikes(models.Model):
     post = models.ForeignKey(Post, models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
     LIKE_STATUS = 1
@@ -79,7 +82,7 @@ class Posts_likes(models.Model):
     status = models.IntegerField(blank=True, default=LIKE_STATUS, choices=STATUS_CHOICES)
 
 
-class Comments_likes(models.Model):
+class CommentsLikes(models.Model):
     comment = models.ForeignKey(Comment, models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
     LIKE_STATUS = 1

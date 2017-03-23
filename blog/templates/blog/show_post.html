@@ -1,5 +1,6 @@
 {% extends "core/base.html" %}
 {% load mptt_tags %}
+{% load blog_extras %}
 {% load static %}
 
 {% block add_css %}
@@ -29,7 +30,9 @@
 	{% recursetree comments %}
 		<div>
 			{% if node.status %}
-			<div id='comment-{{ node.id }}' class='comment'>
+			<div id='comment-{{ node.id }}' class='comment 
+			{% if node|check_comment_downvoted %}comment-downvoted{% endif %}
+			'>
 				<div class='comment-author'>
 					<div class='comment-author-avatar'>
 						{% if node.creator.avatar %}
@@ -44,19 +47,18 @@
 				<div class='comment-text'>{{ node.text|escape|linebreaksbr }}</div>
 				<div class='comment-footer'>
 					<div id='comment-{{ node.id }}-reply' class='comment-reply'>Reply</div>
+					<div id='comment-{{ node.id }}-dislike' class='comment-like'>&darr;</div>
+					<div id='comment-{{ node.id }}-like' class='comment-like'>&uarr;</div>
+					<div id='comment-{{ node.id }}-counter' class='comment-counter 
+					{% if node.likes_num > 0 %}comment-counter-positive{% endif %}
+					{% if node.likes_num == 0 %}comment-counter-zero{% endif %}
+					{% if node.likes_num < 0 %}comment-counter-negative{% endif %}
+						'>{{ node.likes_num|abs }}</div>
 				</div>
 			</div>
 			{% else %}
 			<div id='comment-{{ node.id }}-reply' class='comment-reply comment-root-reply'>Reply</div>
 			{% endif %}
-			{% comment 'Non-js reply field' %}
-			<form method='post' class='comment-add'>
-				{% csrf_token %}
-				{{ form.text }}
-				<input type='hidden' name='parent_id' value='{{ node.id }}'>
-				<input type='submit' value='Comment'>
-			</form>
-			{% endcomment %}
 			{% if not node.is_leaf_node %}
 			<div class='comment-shift {% if node.level|divisibleby:2 %}comment-color-first{% else %}comment-color-second{% endif %}'>
 				{{ children }}

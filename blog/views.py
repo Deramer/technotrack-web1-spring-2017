@@ -7,7 +7,7 @@ from django import forms
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse
@@ -16,7 +16,8 @@ from django.utils.html import escape
 
 from html import unescape
 
-from .models import Blog, Post, Comment, Category
+from .models import Blog, Post, Comment, Category, CommentsLikes
+from .forms import CommentForm, CommentLikeForm
 
 
 def _get_order(get):
@@ -100,7 +101,8 @@ class PostView(DetailView):
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
         post = get_object_or_404(Post, id=self.kwargs['post_id'])
         if post.comments is None:
-            root_comment = Comment(creator=None, text='', status=Comment.ROOT_COMMENT)
+            root_comment = Comment(creator=None, 
+                    text='root of ' + str(self.kwargs['blog_id']) + str(self.kwargs['post_id']), status=Comment.ROOT_COMMENT)
             root_comment.save()
             post.comments = root_comment
             post.save()
@@ -220,27 +222,6 @@ class BlogDeletionForbidden(TemplateView):
         return context
 
 
-class CommentForm(ModelForm):
-    parent_id = forms.IntegerField(widget = forms.HiddenInput(), initial = -1)
-
-    class Meta:
-        model = Comment
-        fields = ['text', 'parent_id',]
-    
-    def clean_parent_id(self):
-        parent_id = self.cleaned_data['parent_id']
-        try:
-            if int(parent_id) < 0:
-                raise ValidationError('Invalid parent_id, < 0')
-        except:
-            raise ValidationError('Invalid parent_id, not an int %(parent_id)s', params={'parent_id': parent_id})
-        try:
-            Comment.objects.get(id=int(parent_id))
-        except ObjectDoesNotExist:
-            raise ValidationError('No such parent in database, parent_id %(parent_id)s', params={'parent_id': parent_id})
-        return parent_id
-
-
 @method_decorator(login_required, name='dispatch')
 class GetCommentForm(CreateView):
     template_name = 'blog/comment_form.html'
@@ -261,3 +242,34 @@ class GetCommentForm(CreateView):
         form.instance.creator = self.request.user
         form.instance.parent = Comment.objects.get(id=int(form.cleaned_data['parent_id']))
         return super(GetCommentForm, self).form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class CreateCommentLike(CreateView):
+    template_name = 'blog/comment_like_form.html'
+    form_class = CommentLikeForm
+
+    def get_initial(self):
+        initial = super(CreateCommentLike, self).get_initial()
+        try:
+            initial['node_id'] = int(self.request.GET['node_id'])
+            initial['like'] = self.request.GET['like']
+        except (ValueError, KeyError):
+            initial['like'] = True
+            initial['node_id'] = -1
+        return initial
+
+    def form_valid(self, form):
+        try:
+            comm_like = CommentsLikes.objects.get(user=self.request.user, comment=form.cleaned_data['node_id'])
+            comm_like.status = CommentsLikes.LIKE_STATUS if form.cleaned_data['like'] else CommentsLikes.DISLIKE_STATUS
+            comm_like.save()
+        except ObjectDoesNotExist:
+            form.instance.user = self.request.user
+            form.instance.comment = Comment.objects.get(id=form.cleaned_data['node_id'])
+            form.instance.status = CommentsLikes.LIKE_STATUS if form.cleaned_data['like'] else CommentsLikes.DISLIKE_STATUS
+            self.object = form.save()
+        comm = Comment.objects.get(id=form.cleaned_data['node_id'])
+        comm.update_likes_num()
+        return JsonResponse({'likes_num': comm.likes_num,
+            'downvoted': True if comm.status == Comment.DOWNVOTED_COMMENT else False})

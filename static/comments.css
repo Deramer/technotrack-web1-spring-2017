@@ -1,5 +1,10 @@
 .comment {
 	border: 1px solid black;
+	margin: 2px 0px;
+}
+
+.comment-author a:visited, .comment-footer a:visited {
+	color: blue;
 }
 
 .comment-shift {
@@ -20,6 +25,24 @@
 
 .comment-color-first {
 	background-color: #f0f0f0;
+}
+
+.comment-downvoted {
+	border: 1px solid gray;
+	color: gray;
+}
+
+.comment-downvoted a:visited, .comment-downvoted .comment-author a:visited, .comment-downvoted .comment-footer a:visited {
+	color: gray;
+}
+
+.comment-downvoted:hover {
+	border: 1px solid black;
+	color: black;
+}
+
+.comment-downvoted a:visited, .comment-downvoted:hover .comment-author a:visited, .comment-downvoted:hover .comment-footer a:visited {
+	color: blue;
 }
 
 .comment-author {
@@ -51,11 +74,50 @@
 	margin: 3px;
 }
 
-.comment-reply {
+.comment-reply, .comment-downvoted:hover .comment-reply {
 	color: blue;
 	text-decoration: underline;
+	display: inline-block;
+}
+
+.comment-downvoted .comment-reply {
+	color: gray;
 }
 
 .comment-reply:hover {
 	cursor: pointer;
+}
+
+.comment-like, .comment-counter {
+	display: inline-block;
+	float: right;
+}
+
+.comment-like {
+	color: blue;
+	cursor: pointer;
+}
+
+.comment-counter {
+	margin-right: 2px;
+}
+
+.comment-counter-positive {
+	color: green;
+}
+
+.comment-counter-positive:before {
+	content: '+';
+}
+
+.comment-counter-zero {
+	color: gray;
+}
+
+.comment-counter-negative {
+	color: red;
+}
+
+.comment-counter-negative:before {
+	content: '-';
 }
