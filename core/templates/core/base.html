@@ -29,12 +29,26 @@
 		<li class='header-user'><a href='{% url 'core:register' %}'>Sign up</a></li>
 		<li class='header-user'><a href='{% url 'core:login' %}'>Log in</a></li>
 		{% endif %}
+		<li class='header-mobile'>Menu</li>
+		<li id='header-mobile-icon' class='header-mobile header-mobile-right'>&#9776;</li>
 	</ul>
 	</div>
 	{% endblock %}
 	
-	<div id="content">
-		{% block content %}{% endblock %}
+	<div id="layout">
+		<div id="content">
+			{% block content %}{% endblock %}
+		</div>
+
+		<div id="sidebar">
+			{% block sidebar %}
+			<p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaa</p>
+			{% endblock %}
+		</div>
+	</div>
+
+	<div id="footer">
+		{% block footer %}{% endblock %}
 	</div>
 </body>
 </html>

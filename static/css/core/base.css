@@ -2,11 +2,33 @@ body {
 	margin: 0;
 }
 
-#content {
+p {
+	overflow-wrap: break-word;
+}
+
+a:visited {
+	color: blue;
+}
+
+#layout {
 	margin: 8px;
 	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
+	position: relative;
+}
+
+#sidebar {
+	width: 200px;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+#content {
+	max-width: 800px;
+	margin-right: 250px;
+	margin-left: 10px;
 }
 
 .header {
@@ -33,6 +55,14 @@ body {
 	padding-right: 10px;
 }
 
+.header .header-mobile {
+	display: none;
+}
+
+.header .header-mobile-right {
+	float: right;
+}
+
 .header .header-user {
 	float: right;
 	padding-right: 0px;
@@ -57,4 +87,23 @@ body {
 	height: 33px;
 	bottom: 7px;
 	left: 5px;
+}
+
+@media screen and (max-width: 640px) {
+	.header li {
+		display: none;
+	}
+
+	.header .header-mobile {
+		display: inline-block;
+	}
+
+	#sidebar {
+		position: static;
+		width: auto;
+	}
+
+	#content {
+		margin-right: 10px;
+	}
 }

@@ -65,3 +65,30 @@
 .pages_list li + li {
 	padding-left: 5px;
 }
+
+@media screen and (max-width: 640px) {
+	.blog-table th {
+		display: none;
+	}
+
+	.blog-table td {
+		display: inline-block;
+	}
+
+	.blog-table td.title-col {
+		display: block;
+	}
+
+	.blog-table .title-col {
+		padding-bottom: 5px;
+	}
+
+	.blog-table .creator-col, .blog-table .update-col {
+		padding: 0px;
+		font-size: 12px;
+	}
+
+	.blog-table .creator-col:after {
+		content: ",";
+	}
+}

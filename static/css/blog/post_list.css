@@ -1,12 +1,15 @@
 .post {
 	position: relative;
 	border-bottom: 2px solid black;
-	max-height: 500px;
 	overflow-y: hidden;
+	margin-bottom: 20px;
 }
 
 .post-text {
 	position: relative;
+	overflow-y: hidden;
+	max-height: 450px;
+	margin-bottom: 10px;
 }
 
 .post-text:after {
@@ -18,4 +21,18 @@
 	pointer-events: none;
 }
 
+.post-footer {
+	margin: 4px 0px;
+}
 
+.post .post-header {
+	margin-bottom: 5px;
+}
+
+.post .post-blog {
+	margin-top: 5px;
+}
+
+.post-blog a, .post-blog a:visited {
+	color: black;
+}

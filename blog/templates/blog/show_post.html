@@ -10,7 +10,7 @@
 
 {% block add_js %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src='{% static 'js/comments.js' %}'></script>
+<script src='{% static 'js/blog/comments.js' %}'></script>
 {% endblock %}
 
 {% block content %}
@@ -22,6 +22,10 @@
 {% if post %}
 	<h2>{{ post.title|escape }}</h2>
 	<p>{{ post.text|escape|linebreaksbr}}</p>
+	{% if user == post.creator %}
+	<p><a href='{% url 'blog:update_post' blog.id post.id %}'>Update</a>   
+	<a href='{% url 'blog:delete_post' blog.id post.id %}'>Delete</a></p>
+	{% endif %}
 	<div class='post-footer'>
 		<div class='post-author-avatar'>
 			{% if post.creator.avatar %}
@@ -37,12 +41,8 @@
 		{% if root_comment.likes_num == 0 %}comment-counter-zero{% endif %}
 		{% if root_comment.likes_num < 0 %}comment-counter-negative{% endif %}
 			'>{{ root_comment.likes_num|abs }}</div>
-		<div id='comment-{{ root_comment.id }}-reply' class='post-reply js-reply'>Reply</div>
+		<p id='comment-{{ root_comment.id }}-reply' class='post-reply js-reply'>Reply</p>
 	</div>
-	{% if user == post.creator %}
-	<p><a href='{% url 'blog:update_post' blog.id post.id %}'>Update</a>   
-	<a href='{% url 'blog:delete_post' blog.id post.id %}'>Delete</a></p>
-	{% endif %}
 	<h3>Comments</h3>
 	{% if comments %}
 	{% recursetree comments %}
@@ -59,10 +59,10 @@
 					</div>
 					<div class='comment-author-text'>
 						<div><a href='{% url 'user:user_page' node.creator.id %}'>{{ node.creator.username|escape }}</a></div>
-						<div>on {{ node.created_at }} said:</div>
+						<p class='comment-created-at'>on {{ node.created_at }} said:</p>
 					</div>
 				</div>
-				<div class='comment-text'>{{ node.text|escape|linebreaksbr }}</div>
+				<p class='comment-text'>{{ node.text|escape|linebreaksbr }}</p>
 				<div class='comment-footer'>
 					<div id='comment-{{ node.id }}-reply' class='comment-reply js-reply'>Reply</div>
 					<div id='comment-{{ node.id }}-dislike' class='comment-like'>&darr;</div>
@@ -75,7 +75,7 @@
 				</div>
 			</div>
 			{% if not node.is_leaf_node %}
-			<div class='comment-shift 
+			<div class='{% if node.level < 6 %}comment-shift{% endif %} 
 				{% if node.level|divisibleby:2 %}comment-color-first{% else %}comment-color-second{% endif %}
 				'>
 				{{ children }}

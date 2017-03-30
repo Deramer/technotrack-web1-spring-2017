@@ -65,6 +65,10 @@
 	margin-left: 50px;
 }
 
+.comment-created-at {
+	margin-top: 0px;
+}
+
 .comment-text {
 	margin-bottom: 3px;
 	margin-left: 3px;
@@ -120,4 +124,10 @@
 
 .comment-counter-negative:before {
 	content: '-';
+}
+
+@media screen and (max-width: 640px) {
+	.comment-shift {
+		padding-left: 20px;
+	}
 }
