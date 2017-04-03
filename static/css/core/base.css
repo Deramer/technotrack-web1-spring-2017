@@ -21,8 +21,13 @@ a:visited {
 #sidebar {
 	width: 200px;
 	position: absolute;
-	right: 0px;
+	right: 5px;
 	top: 0px;
+	margin: 5px;
+}
+
+#sidebar p {
+	margin-top: 0px;
 }
 
 #content {
