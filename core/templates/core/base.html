@@ -7,6 +7,12 @@
 	<link rel='stylesheet' href='{% static 'css/core/base.css' %}'>
 	<link rel='stylesheet' href='{% static 'css/core/normalize.css' %}'>
 	{% endblock %}
+	{% block jquery %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	{% endblock %}
+	{% block core_js %}
+	<script src='{% static 'js/core/core.js' %}'></script>
+	{% endblock %}
 	{% block add_css %}{% endblock %}
 	{% block add_js %}{% endblock %}
 </head>
@@ -15,6 +21,8 @@
 	{% block header %}
 	<div class='header'>
 	<ul class='header-list'>
+		<li class='header-mobile'>Menu</li>
+		<li id='header-mobile-icon' class='header-mobile header-mobile-right'>&#9776;</li>
 		<li><a href='{% url 'core:home' %}'>Home</a></li>
 		<li><a href='{% url 'blog:index' %}'>Blogs</a></li>
 		<li><a href='{% url 'core:about' %}'>About</a></li>
@@ -29,8 +37,6 @@
 		<li class='header-user'><a href='{% url 'core:register' %}'>Sign up</a></li>
 		<li class='header-user'><a href='{% url 'core:login' %}'>Log in</a></li>
 		{% endif %}
-		<li class='header-mobile'>Menu</li>
-		<li id='header-mobile-icon' class='header-mobile header-mobile-right'>&#9776;</li>
 	</ul>
 	</div>
 	{% endblock %}
@@ -48,7 +54,9 @@
 	</div>
 
 	<div id="footer">
-		{% block footer %}{% endblock %}
+		{% block footer %}
+		<p class='footer-devs'>&copy;Deramer</p>
+		{% endblock %}
 	</div>
 </body>
 </html>

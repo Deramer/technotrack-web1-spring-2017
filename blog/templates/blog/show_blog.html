@@ -5,6 +5,10 @@
 <link rel='stylesheet' href='{% static 'css/blog/post_list.css' %}'>
 {% endblock %}
 
+{% block add_js %}
+<script src='{% static 'js/blog/post_list.js' %}'></script>
+{% endblock %}
+
 {% block content %}
 <h1>Posts in the blog "<a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title|escape }}</a>"</h1>
 

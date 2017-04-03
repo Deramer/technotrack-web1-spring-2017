@@ -31,6 +31,13 @@ a:visited {
 	margin-left: 10px;
 }
 
+#footer {
+	background: black;
+	color: white;
+	padding: 10px 15px;
+	margin: 0px;
+}
+
 .header {
 	background: black;
 	color: white;
@@ -89,13 +96,35 @@ a:visited {
 	left: 5px;
 }
 
+.footer-devs {
+	margin: 5px;
+}
+
 @media screen and (max-width: 640px) {
 	.header li {
 		display: none;
 	}
 
+	.header li.header-show {
+		display: block;
+		float: none;
+		padding: 5px;
+	}
+/*
+	.header li:last-child {
+		padding-bottom: 0px;
+	}
+*/
+	.header .header-mobile {
+	       padding: 5px;
+       }	       
+
 	.header .header-mobile {
 		display: inline-block;
+	}
+
+	#header-mobile-icon {
+		cursor: pointer;
 	}
 
 	#sidebar {

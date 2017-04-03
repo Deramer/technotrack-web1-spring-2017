@@ -19,4 +19,5 @@ Tasks:
 Next steps:
 - Real-time displaying of new comments;
 - Posts in dialogue window;
-- HTML/CSS.
+- HTML/CSS;
+- Database/optimisation/cache fun.
