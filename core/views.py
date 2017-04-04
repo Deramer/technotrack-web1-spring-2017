@@ -7,6 +7,8 @@ from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
 from django.shortcuts import render
 
+from datetime import datetime
+
 from user.models import User
 from blog.models import Blog, Post, Comment
 
@@ -49,3 +51,18 @@ class HomePageView(TemplateView):
 
 class AboutPage(TemplateView):
     template_name = 'core/aboutpage.html'
+
+
+class RefreshSidebar(TemplateView):
+    template_name = 'core/sidebar.html'
+
+    def get_context_data(self, **kwargs):
+        try:
+            dt = datetime.utcfromtimestamp(float(self.request.GET['from_time']))
+        except (KeyError, ValueError):
+            raise ValidationError('What?')
+            return super(RefreshSidebar, self).get_context_data(**kwargs)
+        context = super(RefreshSidebar, self).get_context_data(**kwargs)
+        context['list'] = Post.objects.filter(created_at__gte=dt).order_by('-created_at')[:9]
+        context['timestamp'] = datetime.utcnow().timestamp()
+        return context

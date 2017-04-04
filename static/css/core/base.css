@@ -105,6 +105,10 @@ a:visited {
 	margin: 5px;
 }
 
+.sidebar-timestamp {
+	display: none;
+}
+
 .sidebar-element p {
 	margin: 0px;
 }

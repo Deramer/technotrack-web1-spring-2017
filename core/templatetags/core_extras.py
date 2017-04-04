@@ -1,4 +1,5 @@
 from django import template
+from datetime import datetime
 
 from blog.models import Post
 
@@ -39,4 +40,7 @@ def querydict_get_list(querydict, key):
 
 @register.inclusion_tag('core/sidebar.html')
 def fill_sidebar():
-    return {'list': Post.objects.order_by('-created_at')[:9]}
+    return {
+            'list': Post.objects.order_by('-created_at')[:9],
+            'timestamp': datetime.utcnow().timestamp(),
+            }
