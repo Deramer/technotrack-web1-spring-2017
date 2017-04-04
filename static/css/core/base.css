@@ -105,6 +105,23 @@ a:visited {
 	margin: 5px;
 }
 
+.sidebar-element p {
+	margin: 0px;
+}
+
+.sidebar-element + .sidebar-element {
+	margin-top: 20px;
+}
+
+.sidebar-element:last-child {
+	margin-bottom: 10px;
+}
+
+.sidebar-element .sidebar-element-meta {
+	font-size: 11px;
+	margin-bottom: 2px;
+}
+
 @media screen and (max-width: 640px) {
 	.header li {
 		display: none;

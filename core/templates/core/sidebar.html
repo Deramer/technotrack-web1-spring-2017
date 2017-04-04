@@ -1,0 +1,10 @@
+{% for post in list %}
+<div class='sidebar-element'>
+	<p class='sidebar-element-meta'>
+		<a href='{% url 'user:user_page' post.creator.id %}'>{{ post.creator.username }}</a>, {{ post.created_at }}
+	</p>
+	<p class='sidebar-element-content'>
+	<a href='{% url 'blog:show_blog' post.blog.id %}'>{{ post.blog.title }}</a> &rarr; <a href='{% url 'blog:show_post' post.blog.id post.id %}'>{{ post.title }}</a>
+	</p>
+</div>
+{% endfor %}

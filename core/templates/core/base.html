@@ -1,5 +1,7 @@
-<!DOCTYPE html>
 {% load static %}
+{% load core_extras %}
+
+<!DOCTYPE html>
 <html lang='en'>
 <head>
 	<title>{% block title %}Weblog{% endblock %}</title>
@@ -48,7 +50,7 @@
 
 		<div id="sidebar">
 			{% block sidebar %}
-			<p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaa</p>
+			{% fill_sidebar %}
 			{% endblock %}
 		</div>
 	</div>
