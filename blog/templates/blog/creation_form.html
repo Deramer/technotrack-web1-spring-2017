@@ -1,0 +1,19 @@
+{% load widget_tweaks %}
+
+<div class='form-background'>
+</div>
+<div class='form-content'>
+	<p class='form-close'>close</p>
+	<h2 class='form-text-center'>Create new blog!</h2>
+	<form method='post' action='create/'>
+		{% csrf_token %}
+		{% for field in form %}
+			<p class='form-text-center'>{{ field.label_tag }}</p>
+			<p>{{ field }}<p>
+			<p>{{ field.errors }}</p>
+		{% endfor %}
+		<p>
+			<input type='submit' value='Create' class='form-submit'>
+		</p>
+	</form>
+</div>

@@ -66,6 +66,12 @@
 	padding-left: 5px;
 }
 
+.button-create-blog {
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 @media screen and (max-width: 640px) {
 	.blog-table th {
 		display: none;

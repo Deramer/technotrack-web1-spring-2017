@@ -6,12 +6,17 @@
 <link rel='stylesheet' href='{% static 'css/blog/blog.css' %}'>
 <link rel='stylesheet' href='{% static 'css/core/pagination.css' %}'>
 <link rel='stylesheet' href='{% static 'css/blog/categories.css' %}'>
+<link rel='stylesheet' href='{% static 'css/blog/create_blog.css' %}'>
+{% endblock %}
+
+{% block add_js %}
+<script src='{% static 'js/blog/blog_list.js' %}'></script>
 {% endblock %}
 
 {% block content %}
 <h1>Blogs</h1>
 {% if user.is_authenticated %}
-<p><a href='{% url 'blog:create_blog' %}'>Create new blog.</a></p>
+<p class='button-create-blog'>Create new blog.</p>
 {% endif %}
 
 <p>Show <a href='{% produce_get max=2 %}'>2</a>,

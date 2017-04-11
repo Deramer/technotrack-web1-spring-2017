@@ -33,8 +33,6 @@ function refresh_sidebar() {
 	.done( function(html) {
 		if ($( html ).length === 0) return;
 		len = $( html ).filter( '.sidebar-element' ).length
-		console.log(len)
-		console.log(html)
 		if (len > 0) {
 			$( '#sidebar' ).children().slice(-len).remove()
 		}
