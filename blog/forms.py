@@ -15,12 +15,13 @@ class CommentForm(ModelForm):
     def clean_parent_id(self):
         parent_id = self.cleaned_data['parent_id']
         try:
-            if int(parent_id) < 0:
+            if int(parent_id) < -1:
                 raise ValidationError('Invalid parent_id, < 0')
         except:
             raise ValidationError('Invalid parent_id, not an int %(parent_id)s', params={'parent_id': parent_id})
         try:
-            Comment.objects.get(id=int(parent_id))
+            if int(parent_id) != -1:
+                Comment.objects.get(id=int(parent_id))
         except ObjectDoesNotExist:
             raise ValidationError('No such parent in database, parent_id %(parent_id)s', params={'parent_id': parent_id})
         return parent_id

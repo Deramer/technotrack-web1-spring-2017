@@ -7,7 +7,7 @@ function show_reply_form() {
 	$.ajax({
 		url: "ajax_comment_form",
 		data: {
-			parent_id: $( this ).attr('id').match(/\d+/g)[0]
+			parent_id: $( this ).attr( 'id' ).match(/post/g) !== null ? -1 : $( this ).attr('id').match(/\d+/g)[0]
 		},
 		type: 'GET',
 		dataType: 'html',

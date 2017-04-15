@@ -33,14 +33,14 @@
 		</div>
 		<div class='post-author'><a href='{% url 'user:user_page' post.creator.id %}'>{{ post.creator.username|escape }}</a></div>
 		<div class='post-created-at'>{{ post.created_at }}</div>
-		<div id='comment-{{ root_comment.id }}-dislike' class='comment-like'>&darr;</div>
-		<div id='comment-{{ root_comment.id }}-like' class='comment-like'>&uarr;</div>
-		<div id='comment-{{ root_comment.id }}-counter' class='comment-counter 
-		{% if root_comment.likes_num > 0 %}comment-counter-positive{% endif %}
-		{% if root_comment.likes_num == 0 %}comment-counter-zero{% endif %}
-		{% if root_comment.likes_num < 0 %}comment-counter-negative{% endif %}
-			'>{{ root_comment.likes_num|abs }}</div>
-		<p id='comment-{{ root_comment.id }}-reply' class='post-reply js-reply'>Reply</p>
+		<div id='post-{{ post.id }}-dislike' class='comment-like'>&darr;</div>
+		<div id='post-{{ post.id }}-like' class='comment-like'>&uarr;</div>
+		<div id='post-{{ post.id }}-counter' class='comment-counter 
+		{% if post.likes_num > 0 %}comment-counter-positive{% endif %}
+		{% if post.likes_num == 0 %}comment-counter-zero{% endif %}
+		{% if post.likes_num < 0 %}comment-counter-negative{% endif %}
+			'>{{ post.likes_num|abs }}</div>
+		<p id='post-{{ post.id }}-reply' class='post-reply js-reply'>Reply</p>
 	</div>
 	<h3>Comments</h3>
 	{% if comments %}

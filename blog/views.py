@@ -100,14 +100,7 @@ class PostView(DetailView):
         context = super(PostView, self).get_context_data(**kwargs)
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
         post = get_object_or_404(Post, id=self.kwargs['post_id'])
-        if post.comments is None:
-            root_comment = Comment(creator=None, 
-                    text='root of ' + str(self.kwargs['blog_id']) + str(self.kwargs['post_id']), status=Comment.ROOT_COMMENT)
-            root_comment.save()
-            post.comments = root_comment
-            post.save()
-        context['comments'] = post.comments.get_descendants(include_self=True)
-        context['root_comment'] = post.comments
+        context['comments'] = Comment.objects.filter(post_id=self.kwargs['post_id'])
         return context
 
 
@@ -241,7 +234,11 @@ class GetCommentForm(CreateView):
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
-        form.instance.parent = Comment.objects.get(id=int(form.cleaned_data['parent_id']))
+        if form.cleaned_data['parent_id'] != -1:
+            form.instance.parent = Comment.objects.get(id=int(form.cleaned_data['parent_id']))
+        else:
+            form.instance.parent = None
+        form.instance.post = Post.objects.get(id=self.kwargs['post_id'])
         return super(GetCommentForm, self).form_valid(form)
 
 
