@@ -12,6 +12,7 @@ function blog_form() {
 		$( 'body' ).prepend( html )
 		$( '.form-background' ).click(remove_form)
 		$( '.form-content .form-close' ).click(remove_form)
+		$( '.form-content select[multiple="multiple"]' ).chosen()
 	})
 }
 
