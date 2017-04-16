@@ -44,3 +44,11 @@ def fill_sidebar():
             'list': Post.objects.order_by('-created_at')[:9],
             'timestamp': datetime.utcnow().timestamp(),
             }
+
+@register.inclusion_tag('core/log_form.html', takes_context=True)
+def include_log_form(context, title, submit_button='submit', action='', enctype=''):
+    context['title'] = title
+    context['submit_button'] = submit_button
+    context['action'] = action
+    context['enctype'] = enctype
+    return context

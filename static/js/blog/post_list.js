@@ -1,5 +1,6 @@
 $( document ).ready(function () {
 	show_shadows();
+	$( '.button-create-post' ).click(post_form)
 })
 
 function show_shadows() {
@@ -8,4 +9,22 @@ function show_shadows() {
 			$( this ).addClass( 'overflow' )
 		}
 	})
+}
+
+function post_form() {
+	$.ajax({
+		url: 'create',
+		type: 'GET',
+		dataType: 'html',
+	})
+	.done( function (html) {
+		$( 'body' ).prepend( html )
+		$( '.form-background' ).click(remove_form)
+		$( '.form-content .form-close' ).click(remove_form)
+	})
+}
+
+function remove_form() {
+	$( '.form-background' ).remove()
+	$( '.form-content' ).remove()
 }

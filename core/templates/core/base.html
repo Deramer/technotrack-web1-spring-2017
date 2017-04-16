@@ -8,6 +8,7 @@
 	{% block base_css %}
 	<link rel='stylesheet' href='{% static 'css/core/base.css' %}'>
 	<link rel='stylesheet' href='{% static 'css/core/normalize.css' %}'>
+	<link rel='stylesheet' href='{% static 'css/core/form_design.css' %}'>
 	{% endblock %}
 	{% block jquery %}
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -36,8 +37,8 @@
 					{% endif %}</a></li>
 		<li class='header-user'><a href='{% url 'core:logout' %}'>Log out</a></li>
 		{% else %}
-		<li class='header-user'><a href='{% url 'core:register' %}'>Sign up</a></li>
-		<li class='header-user'><a href='{% url 'core:login' %}'>Log in</a></li>
+		<li class='header-user'><a href='{% url 'core:register' %}' class='signup-button'>Sign up</a></li>
+		<li class='header-user'><a href='{% url 'core:login' %}' class='login-button'>Log in</a></li>
 		{% endif %}
 	</ul>
 	</div>

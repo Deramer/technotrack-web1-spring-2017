@@ -4,16 +4,17 @@
 </div>
 <div class='form-content'>
 	<p class='form-close'>close</p>
-	<h2 class='form-text-center'>Create new {{ obj_name }}!</h2>
-	<form method='post' action='create/'>
+	<h2 class='form-text-center'>{{ title }}</h2>
+	<form method='post' action='{% url action %}' {{ enctype }}>
 		{% csrf_token %}
+		{{ form.non_field_errors }}
 		{% for field in form %}
 			<p class='form-text-center'>{{ field.label_tag }}</p>
 			<p>{{ field }}<p>
 			<p>{{ field.errors }}</p>
 		{% endfor %}
 		<p>
-			<input type='submit' value='Create' class='form-submit'>
+			<input type='submit' value='{{ submit_button }}' class='form-submit'>
 		</p>
 	</form>
 </div>

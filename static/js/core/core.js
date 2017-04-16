@@ -3,6 +3,8 @@ $( document ).ready(function () {
 	correct_footer_position()
 	$( window ).resize(correct_footer_position)
 	setTimeout(refresh_sidebar, 5000)
+	$( '.login-button' ).click(show_login_form)
+	$( '.signup-button' ).click(show_login_form)
 })
 
 function mobile_menu() {
@@ -42,3 +44,44 @@ function refresh_sidebar() {
 	})
 }
 
+function show_login_form(event) {
+	event.preventDefault()
+	$.ajax({
+		url: $( this ).attr( 'href' ),
+		type: 'GET',
+		dataType: 'html',
+	})
+	.done( function (html) {
+		$( 'body' ).prepend( html )
+		$( '.form-background' ).click(remove_form)
+		$( '.form-content .form-close' ).click(remove_form)
+		$( '.form-content form' ).submit(send_login_form)
+	})
+}
+
+function send_login_form(event) {
+	event.preventDefault()
+	$.ajax({
+		url: $( this ).attr( 'action' ),
+		type: 'POST',
+		data: $( this ).serialize(),
+		dataType: 'html',
+	})
+	.done( function(html) {
+		$( '.form-background' ).remove()
+		$( '.form-content' ).remove()
+		if ($( html ).find( '.form-close' ).length !== 0) {
+			$( 'body' ).prepend( html )
+			$( '.form-background' ).click(remove_form)
+			$( '.form-content .form-close' ).click(remove_form)
+			$( '.form-content form' ).submit(send_login_form)
+		} else {
+			location = location
+		}
+	})
+}
+
+function remove_form() {
+	$( '.form-background' ).remove()
+	$( '.form-content' ).remove()
+}

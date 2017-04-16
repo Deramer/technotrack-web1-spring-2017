@@ -15,6 +15,5 @@ Tasks:
 - Probably: files, which are not avatars.
 
 Next steps:
-- Posts in dialogue window;
 - HTML/CSS;
 - Database/optimisation/cache fun.

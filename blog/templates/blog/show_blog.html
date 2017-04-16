@@ -13,9 +13,12 @@
 <h1>Posts in the blog "<a href='{% url 'blog:show_blog' blog.id %}'>{{ blog.title|escape }}</a>"</h1>
 
 {% if user.is_authenticated %}
+{% comment 'delete that' %}
 <p><a href='{% url 'blog:create_post' blog.id %}'>Create new post!</a></p>
+{% endcomment %}
+<p class='button-create-post'>Create new post.</p>
 {% else %}
-<p><a href='{% url 'core:login' %}'>Login</a> to create new post.</p>
+<p><a href='{% url 'core:login' %}' class='login-button'>Login</a> to create new post.</p>
 {% endif %}
 
 <p>Sort by <a href='?order=updated{% if order_desc_updated_at %}&order_way=asc{% endif %}'>updated</a>,
