@@ -26,7 +26,7 @@ function like_request() {
 			'model': $( this ).data( 'model' ),
 			'id': $( this ).data( 'id' ),
 			'status': $( this ).data( 'status' ),
-			'csrfmiddlewaretoken': $( 'meta[csrf-token]' ).attr( 'csrf-token' ),
+			'csrfmiddlewaretoken': $( "meta[name=csrf]" ).attr( 'content' ),
 		},
 		dataType: 'json',
 		context: this,
