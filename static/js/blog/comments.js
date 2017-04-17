@@ -1,6 +1,6 @@
 $( document ).ready(function () {
 	$( '.js-reply' ).click(show_reply_form);
-	$( '.comment-like' ).click(like_request);
+	$( '.generic-like' ).click(like_request);
 })
 
 function show_reply_form() {
@@ -20,41 +20,42 @@ function show_reply_form() {
 
 function like_request() {
 	$.ajax({
-		url: 'ajax_like',
+		url: "ajax_like",
+		type: 'POST',
 		data: {
-			node_id: $( this ).attr('id').match(/\d+/g)[0],
-			like: $( this ).attr('id').match(/dis/g) === null,
+			'model': $( this ).data( 'model' ),
+			'id': $( this ).data( 'id' ),
+			'status': $( this ).data( 'status' ),
+			'csrfmiddlewaretoken': $( 'meta[csrf-token]' ).attr( 'csrf-token' ),
 		},
-		type: 'GET',
-		dataType: 'html',
+		dataType: 'json',
 		context: this,
 	})
-	.done( function(html) {
-		$.ajax({
-			type: 'POST',
-			url: 'ajax_like',
-			data: $( html ).serialize(),
-			dataType: 'json',
-			context: this,
-			success: function(json) {
-				var $counter = $( '#comment-' + $( this ).attr('id').match(/\d+/g)[0] + '-counter' )
-				$counter.html(Math.abs(json.likes_num))
-				$counter.removeClass('comment-counter-negative comment-counter-zero comment-counter-positive')
-				if (json.likes_num < 0) {
-					$counter.addClass('comment-counter-negative')
-				}
-				if (json.likes_num === 0) {
-					$counter.addClass('comment-counter-zero')
-				}
-				if (json.likes_num > 0) {
-					$counter.addClass('comment-counter-positive')
-				}
-				var $comment = $( '#comment-' + $( this ).attr('id').match(/\d+/g)[0] )
-				$comment.removeClass('comment-downvoted')
-				if (json.downvoted) {
-					$comment.addClass('comment-downvoted')
-				} 
+	.done( function(json) {
+		if (json.result !== 'OK') {
+			console.log(json.result)
+			return
+		}
+		var $counter = $( '#comment-' + $( this ).data( 'id' ) + '-counter' )
+		if ( $counter.length !== 0 ) {
+			var $comment = $( '#comment-' + $( this ).data( 'id' ) )
+			$comment.removeClass('comment-downvoted')
+			if (json.downvoted) {
+				$comment.addClass('comment-downvoted')
 			}
-		})
+		} else {
+			$counter = $( '#post-' + $( this ).data( 'id' ) + '-counter' )
+		}
+		$counter.html(Math.abs(json.likes_num))
+		$counter.removeClass('comment-counter-negative comment-counter-zero comment-counter-positive')
+		if (json.likes_num < 0) {
+			$counter.addClass('comment-counter-negative')
+		}
+		if (json.likes_num === 0) {
+			$counter.addClass('comment-counter-zero')
+		}
+		if (json.likes_num > 0) {
+			$counter.addClass('comment-counter-positive')
+		}
 	})
 }

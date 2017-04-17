@@ -92,12 +92,12 @@
 	cursor: pointer;
 }
 
-.comment-like, .comment-counter {
+.generic-like, .comment-counter {
 	display: inline-block;
 	float: right;
 }
 
-.comment-like {
+.generic-like {
 	color: blue;
 	cursor: pointer;
 }

@@ -33,8 +33,10 @@
 		</div>
 		<div class='post-author'><a href='{% url 'user:user_page' post.creator.id %}'>{{ post.creator.username|escape }}</a></div>
 		<div class='post-created-at'>{{ post.created_at }}</div>
-		<div id='post-{{ post.id }}-dislike' class='comment-like'>&darr;</div>
-		<div id='post-{{ post.id }}-like' class='comment-like'>&uarr;</div>
+		<div id='post-{{ post.id }}-dislike' class='generic-like' 
+			data-model='{{ post_ct_id }}' data-id='{{ post.id }}' data-status='-1'>&darr;</div>
+		<div id='post-{{ post.id }}-like' class='generic-like'
+			data-model='{{ post_ct_id }}' data-id='{{ post.id }}' data-status='1'>&uarr;</div>
 		<div id='post-{{ post.id }}-counter' class='comment-counter 
 		{% if post.likes_num > 0 %}comment-counter-positive{% endif %}
 		{% if post.likes_num == 0 %}comment-counter-zero{% endif %}
@@ -64,8 +66,10 @@
 				<p class='comment-text'>{{ node.text|escape|linebreaksbr }}</p>
 				<div class='comment-footer'>
 					<div id='comment-{{ node.id }}-reply' class='comment-reply js-reply'>Reply</div>
-					<div id='comment-{{ node.id }}-dislike' class='comment-like'>&darr;</div>
-					<div id='comment-{{ node.id }}-like' class='comment-like'>&uarr;</div>
+					<div id='comment-{{ node.id }}-dislike' class='generic-like' 
+						data-model='{{ comment_ct_id }}' data-id='{{ node.id }}' data-status='-1'>&darr;</div>
+					<div id='comment-{{ node.id }}-like' class='generic-like' 
+						data-model='{{ comment_ct_id }}' data-id='{{ node.id }}' data-status='1'>&uarr;</div>
 					<div id='comment-{{ node.id }}-counter' class='comment-counter 
 					{% if node.likes_num > 0 %}comment-counter-positive{% endif %}
 					{% if node.likes_num == 0 %}comment-counter-zero{% endif %}

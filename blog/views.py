@@ -1,14 +1,16 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Sum
 from django.forms import ModelForm, Textarea
 from django import forms
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.http import HttpResponse, JsonResponse
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import ListView, DetailView, TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -16,7 +18,7 @@ from django.utils.html import escape
 
 from html import unescape
 
-from .models import Blog, Post, Comment, Category, CommentsLikes
+from .models import Blog, Post, Comment, Category, GenericLike
 from .forms import CommentForm, CommentLikeForm
 
 
@@ -101,6 +103,8 @@ class PostView(DetailView):
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
         post = get_object_or_404(Post, id=self.kwargs['post_id'])
         context['comments'] = Comment.objects.filter(post_id=self.kwargs['post_id'])
+        context['post_ct_id'] = ContentType.objects.get_for_model(Post).id
+        context['comment_ct_id'] = ContentType.objects.get_for_model(Comment).id
         return context
 
 
@@ -243,31 +247,37 @@ class GetCommentForm(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class CreateCommentLike(CreateView):
-    template_name = 'blog/comment_like_form.html'
-    form_class = CommentLikeForm
-
-    def get_initial(self):
-        initial = super(CreateCommentLike, self).get_initial()
+class CreateLike(View):
+    def post(self, request, *args, **kwargs):
+        if 'model' not in request.POST or 'id' not in request.POST or 'status' not in request.POST:
+            return JsonResponse({'result': 'Error: model, id or status not in data'})
         try:
-            initial['node_id'] = int(self.request.GET['node_id'])
-            initial['like'] = self.request.GET['like']
-        except (ValueError, KeyError):
-            initial['like'] = True
-            initial['node_id'] = -1
-        return initial
-
-    def form_valid(self, form):
-        try:
-            comm_like = CommentsLikes.objects.get(user=self.request.user, comment=form.cleaned_data['node_id'])
-            comm_like.status = CommentsLikes.LIKE_STATUS if form.cleaned_data['like'] else CommentsLikes.DISLIKE_STATUS
-            comm_like.save()
+            ct = ContentType.objects.get_for_id(request.POST['model'])
         except ObjectDoesNotExist:
-            form.instance.user = self.request.user
-            form.instance.comment = Comment.objects.get(id=form.cleaned_data['node_id'])
-            form.instance.status = CommentsLikes.LIKE_STATUS if form.cleaned_data['like'] else CommentsLikes.DISLIKE_STATUS
-            self.object = form.save()
-        comm = Comment.objects.get(id=form.cleaned_data['node_id'])
-        comm.update_likes_num()
-        return JsonResponse({'likes_num': comm.likes_num,
-            'downvoted': True if comm.status == Comment.DOWNVOTED_COMMENT else False})
+            return JsonResponse({'result': 'Error: model does not exist'})
+        try:
+            obj = ct.get_object_for_this_type(id=request.POST['id'])
+        except ObjectDoesNotExist:
+            return JsonResponse({'result': 'Error: no object with such id'})
+        try:
+            if (int(request.POST['status'])) not in [-1, 1]:
+                return JsonResponse({'result': 'Error: status must be either 1 or -1'})
+        except ValueError:
+            return JsonResponse({'result': 'Error: status must be int'})
+        try:
+            like = GenericLike.objects.get(content_type=ct, object_id=request.POST['id'], user=request.user)
+            like.status = request.POST[ 'status' ]
+            like.save()
+        except ObjectDoesNotExist:
+            like = GenericLike(content_type=ct, object_id=request.POST['id'], user=request.user, status=int(request.POST['status']))
+            like.save()
+        response = {'result': 'OK'}
+        try:
+            obj.update_likes_num()
+            response['likes_num'] = obj.likes_num
+        except AttributeError:
+            all_likes = GenericLike.objects.filter(content_type=ct, object_id=request.POST['id'])
+            response['likes_num'] = all_likes.aggregate(Sum('status'))['status__avg']
+        if ct.model == 'comment':
+            response['downvoted'] = True if obj.status == Comment.DOWNVOTED_COMMENT else False
+        return JsonResponse(response)

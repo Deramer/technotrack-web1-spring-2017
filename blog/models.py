@@ -1,5 +1,8 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+
 from mptt.models import MPTTModel, TreeForeignKey
 
 
@@ -24,6 +27,20 @@ class Blog(models.Model):
         return str(self.title)
 
 
+class GenericLike(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
+    LIKE_STATUS = 1
+    DISLIKE_STATUS = -1
+    STATUS_CHOICES = (
+            (DISLIKE_STATUS, 'Dislike'),
+            (LIKE_STATUS, 'Like'),
+    )
+    status = models.IntegerField(blank=True, default=LIKE_STATUS, choices=STATUS_CHOICES)
+
+
 class Post(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, models.SET_NULL, null=True)
     blog = models.ForeignKey(Blog, models.CASCADE)
@@ -32,9 +49,14 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes_num = models.IntegerField(blank=True, default=0)
+    likes = GenericRelation(GenericLike)
 
     def __str__(self):
         return self.title
+
+    def update_likes_num(self):
+        self.likes_num = self.likes.aggregate(models.Sum('status'))['status__sum']
+        self.save()
 
 
 class Comment(MPTTModel):
@@ -42,6 +64,7 @@ class Comment(MPTTModel):
     created_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
     likes_num = models.IntegerField(blank=True, default=0)
+    likes = GenericRelation(GenericLike)
     post = models.ForeignKey(Post, models.CASCADE)
     USUAL_COMMENT = 1
     DELETED_COMMENT = 2
@@ -60,21 +83,9 @@ class Comment(MPTTModel):
 
     def update_likes_num(self):
         if self.status != self.DELETED_COMMENT:
-            self.likes_num = CommentsLikes.objects.filter(comment=self.id).aggregate(models.Sum('status'))['status__sum']
+            self.likes_num = self.likes.aggregate(models.Sum('status'))['status__sum']
             if self.likes_num <= self.DOWNVOTED_EDGE:
                 self.status = self.DOWNVOTED_COMMENT
             else:
                 self.status = self.USUAL_COMMENT
         self.save()
-
-
-class CommentsLikes(models.Model):
-    comment = models.ForeignKey(Comment, models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
-    LIKE_STATUS = 1
-    DISLIKE_STATUS = -1
-    STATUS_CHOICES = (
-            (DISLIKE_STATUS, 'Dislike'),
-            (LIKE_STATUS, 'Like'),
-    )
-    status = models.IntegerField(blank=True, default=LIKE_STATUS, choices=STATUS_CHOICES)

@@ -2,7 +2,7 @@ from django.forms import ModelForm, Textarea
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from .models import Comment, CommentsLikes
+from .models import Comment, GenericLike
 
 
 class CommentForm(ModelForm):
@@ -31,7 +31,7 @@ class CommentLikeForm(ModelForm):
     like = forms.BooleanField(widget = forms.HiddenInput(), required = False)
 
     class Meta:
-        model = CommentsLikes
+        model = GenericLike
         fields = ['node_id', 'like']
 
     def clean_node_id(self):
