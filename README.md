@@ -11,9 +11,7 @@ Done:
 
 Tasks:
 - Parse GET parameters for search in one distinct form, with extensive use of js;
-- Explore and use widget-tweaks;
 - Probably: files, which are not avatars.
 
 Next steps:
-- HTML/CSS;
 - Database/optimisation/cache fun.
