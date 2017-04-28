@@ -41,7 +41,7 @@ def querydict_get_list(querydict, key):
 @register.inclusion_tag('core/sidebar.html')
 def fill_sidebar():
     return {
-            'list': Post.objects.order_by('-created_at')[:9],
+            'list': Post.objects.order_by('-created_at')[:9].select_related('blog', 'creator'),
             'timestamp': datetime.utcnow().timestamp(),
             }
 

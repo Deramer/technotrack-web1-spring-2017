@@ -63,6 +63,6 @@ class RefreshSidebar(TemplateView):
             raise ValidationError('What?')
             return super(RefreshSidebar, self).get_context_data(**kwargs)
         context = super(RefreshSidebar, self).get_context_data(**kwargs)
-        context['list'] = Post.objects.filter(created_at__gte=dt).order_by('-created_at')[:9]
+        context['list'] = Post.objects.filter(created_at__gte=dt).order_by('-created_at')[:9].select_related('creator', 'blog')
         context['timestamp'] = datetime.utcnow().timestamp()
         return context

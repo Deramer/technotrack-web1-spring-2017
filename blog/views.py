@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.forms import ModelForm, Textarea
 from django import forms
 from django.shortcuts import render, redirect
@@ -70,7 +70,7 @@ class PostList(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+        posts = Post.objects.filter(blog_id=self.kwargs['blog_id']).annotate(Count('comment')).select_related('creator')
         if 'search' in self.request.GET:
             posts = posts.filter(title__icontains = self.request.GET['search'])
         if 'user_id' in self.kwargs:
