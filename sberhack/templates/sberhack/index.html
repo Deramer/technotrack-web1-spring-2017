@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block add_css %}
+<link rel='stylesheet' href='{% static 'css/sberhack/sberhack.css' %}'>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<p>Current sum: {{ general }}</p>
+<p>Sum of not certificated: {{ corrected_not_cert }}</p>
+<p>Sum of certificated: {{ corrected_cert }}
+<p>Sum of not corrected, but certificated: {{ not_corrected_cert }}</p>
+<form method='post'>
+	{% csrf_token %}
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Account ID</th>
+		<th>Turnover</th>
+		<th>From</th>
+		<th>To</th>
+		<th>Certificated</th>
+		<th>Change</th>
+		<th>Certify</th>
+	</tr>
+	{% for row in table %}
+	<tr>
+		{% for cell in row %}
+		<td>
+			{{ cell }}
+		</td>
+		{% endfor %}
+		<td><input type='number' name='change-{{ row.0 }}' style='width: 70px;'></td>
+		<td><input type='checkbox' name='certify-{{ row.0 }}'></td>
+	</tr>
+	{% endfor %}
+</table>
+<input type='submit' value='Submit'>
+</form>
+
+{% endblock %}

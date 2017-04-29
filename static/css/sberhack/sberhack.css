@@ -1,0 +1,13 @@
+#content {
+	width: 1000px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+tr {
+	text-align: center;
+	border: 1px solid black;
+}

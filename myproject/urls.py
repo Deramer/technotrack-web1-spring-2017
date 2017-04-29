@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^', include('core.urls')),
     url(r'^blog/', include('blog.urls')),
     url(r'^user/', include('user.urls')),
+    url(r'^sberhack/', include('sberhack.urls')),
 ]
 
 if (settings.DEBUG):
