@@ -1,7 +1,20 @@
 {% extends 'core/base.html' %}
 
+{% load static %}
+
+{% block add_css %}
+<link rel='stylesheet' href='{% static 'css/user/user_page.css' %}'>
+{% endblock %}
+
+{% block add_js %}
+<script src='{% static 'js/user/user_page.js' %}'></script>
+{% endblock %}
+
 {% block content %}
 <h2>{{ local_user.username }}</h2>
+{% if local_user != user %}
+<a href='subscribe/' class='user-subscribe'>Subscribe!</a>
+{% endif %}
 {% if local_user.avatar %}
 <img src='{{ local_user.avatar.url }}' alt='avatar' height='160' width='160' style='float:right;'>
 {% else %}

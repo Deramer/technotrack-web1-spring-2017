@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.generic import DetailView, ListView
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.views.generic import DetailView, ListView, View
+from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 
 from blog.models import Post
 from blog.views import _get_order
@@ -41,3 +43,14 @@ class UserPostList(ListView):
         context['order_' + _get_order(self.request.GET).replace('-','desc_')] = True
         context['search'] = self.request.GET.get('search', '')
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class SubscribeView(View):
+    def post(self, request, *args, **kwargs):
+        user = get_user_model().objects.get(id=kwargs['user_id'])
+        if user == request.user:
+            return JsonResponse({'status': 'fail', 'error': 'Cannot subscribe self.'})
+        request.user.follows.add(user)
+        request.user.save()
+        return JsonResponse({'status': 'OK'})
