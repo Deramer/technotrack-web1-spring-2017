@@ -95,8 +95,8 @@ DATABASES = {
         'NAME': config.get('database', 'NAME'),
         'USER': config.get('database', 'USER'),
         'PASSWORD': config.get('database', 'PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': config.get('database', 'HOST'),
+        'PORT': config.get('database', 'PORT'),
     }
 }
 
@@ -143,10 +143,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, config.get('general', 'STATIC_ROOT_RELATIVE'))
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, config.get('general', 'MEDIA_ROOT_RELATIVE'))
 
 INTERNAL_IPS = ['127.0.0.1',]
 

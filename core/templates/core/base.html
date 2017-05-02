@@ -6,15 +6,15 @@
 <head>
 	<title>{% block title %}Weblog{% endblock %}</title>
 	{% block base_css %}
-	<link rel='stylesheet' href='{% static 'css/core/base.css' %}'>
-	<link rel='stylesheet' href='{% static 'css/core/normalize.css' %}'>
-	<link rel='stylesheet' href='{% static 'css/core/form_design.css' %}'>
+	<link rel='stylesheet' href='{% static 'core/css/base.css' %}'>
+	<link rel='stylesheet' href='{% static 'core/css/normalize.css' %}'>
+	<link rel='stylesheet' href='{% static 'core/css/form_design.css' %}'>
 	{% endblock %}
 	{% block jquery %}
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	{% endblock %}
 	{% block core_js %}
-	<script src='{% static 'js/core/core.js' %}'></script>
+	<script src='{% static 'core/js/core.js' %}'></script>
 	{% endblock %}
 	{% block add_css %}{% endblock %}
 	{% block add_js %}{% endblock %}
