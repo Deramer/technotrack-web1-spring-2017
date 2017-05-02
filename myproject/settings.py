@@ -151,3 +151,40 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 INTERNAL_IPS = ['127.0.0.1',]
 
 DEBUG_TOOLBAR_CONFIG = { "SHOW_TOOLBAR_CALLBACK": lambda x: True }
+
+# Logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s, %(asctime)s, %(module)s. %(message)s',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'log/info.log'),
+            'formatter': 'verbose',
+        },
+        'debug_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'log/debug.log'),
+            'formatter': 'verbose',
+    },
+    'loggers': {
+        'base': {
+            'handlers': ['file',],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'debug': {
+            'handlers': ['debug_file',],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

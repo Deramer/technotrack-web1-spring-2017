@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.utils.html import escape
 
 from html import unescape
+import logging
 
 from .models import Blog, Post, Comment, Category, GenericLike
 from .forms import CommentForm, CommentLikeForm
@@ -31,6 +32,11 @@ def _get_order(get):
     return order
 
 class BlogList(ListView):
+    logger = logging.getLogger('base')
+
+    def dispatch(self, request, *args, **kwargs):
+        self.logger.info('Someone is requesting the list of blogs')
+        return super(BlogList, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         blogs = Blog.objects
@@ -44,8 +50,7 @@ class BlogList(ListView):
             threshold = int(self.request.GET['max'])
             threshold = threshold if threshold > 0 else 10
         except (KeyError, ValueError):
-            pass
-        self.kwargs['paginator'] = Paginator(blogs, threshold)
+            self.kwargs['paginator'] = Paginator(blogs, threshold)
         try:
             blogs = self.kwargs['paginator'].page(self.request.GET['page']).object_list
         except (KeyError, ValueError, EmptyPage, PageNotAnInteger):

@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import DetailView, ListView, View
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
+
+import logging
 
 from blog.models import Post
 from blog.views import _get_order
@@ -47,9 +50,16 @@ class UserPostList(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class SubscribeView(View):
+    logger = logging.getLogger('base')
+
     def post(self, request, *args, **kwargs):
-        user = get_user_model().objects.get(id=kwargs['user_id'])
+        try:
+            user = get_user_model().objects.get(id=kwargs['user_id'])
+        except ObjectDoesNotExist:
+            self.logger.error("While subscribing, user with id %s wasn't found", kwargs['user_id'])
+            return JsonResponse({'status': 'fail', 'error': 'Such user does not exist'})
         if user == request.user:
+            self.logger.warning('User %s tried to subscribe himself', user)
             return JsonResponse({'status': 'fail', 'error': 'Cannot subscribe self.'})
         request.user.follows.add(user)
         request.user.save()
