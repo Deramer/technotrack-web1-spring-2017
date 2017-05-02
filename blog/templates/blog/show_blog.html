@@ -1,5 +1,6 @@
 {% extends "core/base.html" %}
 {% load static %}
+{% load blog_extras %}
 
 {% block add_css %}
 <link rel='stylesheet' href='{% static 'css/blog/post_list.css' %}'>
@@ -41,7 +42,8 @@
 		<p class='post-footer'>
 			<a href='{% url 'user:user_page' post.creator.id %}'>{{ post.creator.username|escape }}</a>,
 			{{ post.updated_at }} <br/>
-			Likes: {{ post.likes_num }}, comments: {{ post.comment__count }}. <br/>
+			Likes: {{ post.likes_num }}, comments: {{ post.comment__count }}, 
+			subscribed likes: {{ slikes|get_dict_value_or_zero:post.id }} <br/>
 			<a href='{% url 'blog:show_post' blog.id post.id %}'>Read more</a>
 		</p>
 	</div>

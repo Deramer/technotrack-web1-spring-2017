@@ -73,9 +73,11 @@ class BlogList(ListView):
 class PostList(ListView):
     template_name = 'blog/show_blog.html'
     context_object_name = 'posts'
+    logger = logging.getLogger('debug')
 
     def get_queryset(self):
-        posts = Post.objects.filter(blog_id=self.kwargs['blog_id']).annotate(Count('comment')).select_related('creator')
+        posts = self.slikes_posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+        posts = posts.annotate(Count('comment')).prefetch_related('creator')
         if 'search' in self.request.GET:
             posts = posts.filter(title__icontains = self.request.GET['search'])
         if 'user_id' in self.kwargs:
@@ -94,6 +96,14 @@ class PostList(ListView):
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
         context['order_' + _get_order(self.request.GET).replace('-','desc_')] = True
         context['search'] = self.request.GET.get('search', '')
+        if self.request.user.is_authenticated():
+            self.slikes_posts = self.slikes_posts.filter(likes__user_id__in = self.request.user.follows.all())
+            self.slikes_posts = self.slikes_posts.annotate(slikes=Sum('likes__status'))
+            slikes = {}
+            for i, post in enumerate(self.slikes_posts):
+                slikes[post.id] = self.slikes_posts[i].slikes
+            context['slikes'] = slikes
+            self.logger.debug('Slikes %s', slikes)
         return context
 
 
