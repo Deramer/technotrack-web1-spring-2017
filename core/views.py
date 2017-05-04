@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
 from django.shortcuts import render
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from user.models import User
 from blog.models import Blog, Post, Comment
@@ -58,7 +58,7 @@ class RefreshSidebar(TemplateView):
 
     def get_context_data(self, **kwargs):
         try:
-            dt = datetime.utcfromtimestamp(float(self.request.GET['from_time']))
+            dt = datetime.utcfromtimestamp(float(self.request.GET['from_time'])).replace(tzinfo=timezone.utc)
         except (KeyError, ValueError):
             raise ValidationError('What?')
             return super(RefreshSidebar, self).get_context_data(**kwargs)

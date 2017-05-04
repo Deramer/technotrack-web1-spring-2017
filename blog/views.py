@@ -55,7 +55,7 @@ class BlogList(ListView):
             blogs = self.kwargs['paginator'].page(self.request.GET['page']).object_list
         except (KeyError, ValueError, EmptyPage, PageNotAnInteger):
             blogs = self.kwargs['paginator'].page(1).object_list
-        return blogs
+        return blogs.select_related('creator')
 
     def get_context_data(self, **kwargs):
         context = super(BlogList, self).get_context_data()

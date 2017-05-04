@@ -143,10 +143,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, config.get('general', 'STATIC_ROOT_RELATIVE'))
+STATIC_ROOT = config.get('general', 'STATIC_ROOT_RELATIVE')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, config.get('general', 'MEDIA_ROOT_RELATIVE'))
+MEDIA_ROOT = config.get('general', 'MEDIA_ROOT_RELATIVE')
 
 INTERNAL_IPS = ['127.0.0.1',]
 
@@ -159,7 +159,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s, %(asctime)s, %(module)s. %(message)s',
+            'format': '%(levelname)s, %(asctime)s, %(module)s, %(process)s. %(message)s',
         },
     },
     'handlers': {
