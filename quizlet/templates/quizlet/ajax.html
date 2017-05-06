@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block add_js %}
+<script src='{% static 'quizlet/js/ajax.js' %}'></script>
+{% endblock %}
+
+{% block content %}
+<form method='GET' action=''>
+	<input type='hidden' name='lang' value='{{ lang }}'>
+	<input type='hidden' name='id' value='{{ trans.id }}'>
+	<input type='hidden' name='set_num' value='{{ set_num }}'>
+	<p>{{ trans.translation }}</p>
+	<p>
+	{% for word in help %}
+	{{ word.word }}, 
+	{% endfor %}
+	</p>
+	{% for word in words %}
+	<input type='text' name='answer' autofocus><br/>
+	{% endfor %}
+	<input type='submit' value='check'>
+</form>
+{% endblock %}

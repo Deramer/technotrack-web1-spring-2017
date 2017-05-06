@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'blog',
     'core',
     'debug_toolbar',
+    'quizlet',
 ]
 
 MIDDLEWARE = [
