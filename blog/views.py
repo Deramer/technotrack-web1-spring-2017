@@ -76,19 +76,19 @@ class PostList(ListView):
     logger = logging.getLogger('debug')
 
     def get_queryset(self):
-        posts = self.slikes_posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+        posts =  Post.objects.filter(blog_id=self.kwargs['blog_id'])
         posts = posts.annotate(Count('comment')).prefetch_related('creator')
         if 'search' in self.request.GET:
             posts = posts.filter(title__icontains = self.request.GET['search'])
         if 'user_id' in self.kwargs:
             posts = posts.filter(creator_id=self.kwargs['user_id'])
         posts = posts.order_by(_get_order(self.request.GET))
-        threshold = 10
+        self.threshold = 10
         try:
-            threshold = int(self.request.GET['max'])
+            self.threshold = int(self.request.GET['max'])
         except (KeyError, ValueError):
             pass
-        posts = posts[:threshold]
+        posts = posts[:self.threshold]
         return posts
 
     def get_context_data(self, **kwargs):
@@ -97,13 +97,45 @@ class PostList(ListView):
         context['order_' + _get_order(self.request.GET).replace('-','desc_')] = True
         context['search'] = self.request.GET.get('search', '')
         if self.request.user.is_authenticated():
-            self.slikes_posts = self.slikes_posts.filter(likes__user_id__in = self.request.user.follows.all())
-            self.slikes_posts = self.slikes_posts.annotate(slikes=Sum('likes__status'))
+            slikes_posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+            slikes_posts = slikes_posts.filter(likes__user_id__in = self.request.user.follows.all())
+            slikes_posts = slikes_posts.annotate(slikes=Sum('likes__status'))
             slikes = {}
-            for i, post in enumerate(self.slikes_posts):
-                slikes[post.id] = self.slikes_posts[i].slikes
+            for i, post in enumerate(slikes_posts):
+                slikes[post.id] = slikes_posts[i].slikes
             context['slikes'] = slikes
-            self.logger.debug('Slikes %s', slikes)
+        if self.request.user.is_authenticated():
+            query = """SELECT Post.id AS id, coalesce(sum(Gl3.status), 0) AS clike
+                    FROM (
+                        SELECT DISTINCT Gl2.user_id 
+                            FROM Blog_genericLike AS Gl1
+                            INNER JOIN Blog_genericLike AS Gl2 ON (GL1.content_type_id = Gl2.content_type_id AND
+                                Gl1.content_type_id = %s AND Gl1.user_id = %s AND Gl1.object_id = Gl2.object_id
+                            ) 
+                    ) AS Users_list
+                    INNER JOIN Blog_genericLike AS Gl3 
+                        ON (Users_list.user_id = Gl3.user_id AND Gl3.user_id != %s AND Gl3.content_type_id = %s)
+                    RIGHT JOIN Blog_post AS Post ON (Post.id = Gl3.object_id)
+                    WHERE Post.blog_id = %s
+                    GROUP BY Post.id
+                    ORDER BY updated_at DESC
+                    LIMIT %s;
+
+            """
+            post_cont_type = ContentType.objects.get(app_label='blog', model='post').id
+            params = [post_cont_type,
+                    self.request.user.id,
+                    self.request.user.id,
+                    post_cont_type,
+                    self.kwargs['blog_id'],
+                    self.threshold,
+            ]
+            res = Post.objects.raw(query, params)
+            clikes = {}
+            list_res = list(res)
+            for i, post in enumerate(list_res):
+                clikes[post.id] = list_res[i].clike
+            context['clikes'] = clikes
         return context
 
 
