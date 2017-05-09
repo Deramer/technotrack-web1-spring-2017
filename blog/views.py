@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Sum, Count
@@ -76,19 +77,26 @@ class PostList(ListView):
     logger = logging.getLogger('debug')
 
     def get_queryset(self):
-        posts =  Post.objects.filter(blog_id=self.kwargs['blog_id'])
-        posts = posts.annotate(Count('comment')).prefetch_related('creator')
-        if 'search' in self.request.GET:
-            posts = posts.filter(title__icontains = self.request.GET['search'])
-        if 'user_id' in self.kwargs:
-            posts = posts.filter(creator_id=self.kwargs['user_id'])
-        posts = posts.order_by(_get_order(self.request.GET))
         self.threshold = 10
         try:
             self.threshold = int(self.request.GET['max'])
         except (KeyError, ValueError):
             pass
+        if self.threshold == 10 and 'search' not in self.request.GET:
+            cache_key = 'blog:' + self.kwargs['blog_id'] + '::10'
+            posts = cache.get(cache_key)
+        else:
+            posts = None
+        if posts is not None:
+            return posts
+        posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+        posts = posts.annotate(Count('comment')).prefetch_related('creator')
+        if 'search' in self.request.GET:
+            posts = posts.filter(title__icontains = self.request.GET['search'])
+        posts = posts.order_by(_get_order(self.request.GET))
         posts = posts[:self.threshold]
+        if self.threshold == 10 and 'search' not in self.request.GET:
+            cache.set(cache_key, posts)
         return posts
 
     def get_context_data(self, **kwargs):
@@ -97,12 +105,16 @@ class PostList(ListView):
         context['order_' + _get_order(self.request.GET).replace('-','desc_')] = True
         context['search'] = self.request.GET.get('search', '')
         if self.request.user.is_authenticated():
-            slikes_posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
-            slikes_posts = slikes_posts.filter(likes__user_id__in = self.request.user.follows.all())
-            slikes_posts = slikes_posts.annotate(slikes=Sum('likes__status'))
-            slikes = {}
-            for i, post in enumerate(slikes_posts):
-                slikes[post.id] = slikes_posts[i].slikes
+            slikes_cache_key = 'slikes:' + self.kwargs['blog_id'] + ':' + str(self.request.user.id)
+            slikes = cache.get(slikes_cache_key)
+            if slikes is None:
+                slikes_posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+                slikes_posts = slikes_posts.filter(likes__user_id__in = self.request.user.follows.all())
+                slikes_posts = slikes_posts.annotate(slikes=Sum('likes__status'))
+                slikes = {}
+                for i, post in enumerate(slikes_posts):
+                    slikes[post.id] = slikes_posts[i].slikes
+                cache.set(slikes_cache_key, slikes, 113)
             context['slikes'] = slikes
         if self.request.user.is_authenticated():
             query = """SELECT Post.id AS id, coalesce(sum(Gl3.status), 0) AS clike
@@ -122,7 +134,10 @@ class PostList(ListView):
                     LIMIT %s;
 
             """
-            post_cont_type = ContentType.objects.get(app_label='blog', model='post').id
+            post_cont_type = cache.get('post_content_type_id')
+            if post_cont_type is None:
+                post_cont_type = ContentType.objects.get(app_label='blog', model='post').id
+                cache.set('post_content_type_id', post_cont_type)
             params = [post_cont_type,
                     self.request.user.id,
                     self.request.user.id,
@@ -178,6 +193,7 @@ class CreatePost(CreateView):
     def form_valid(self, form):
         form.instance.creator = self.request.user
         form.instance.blog = get_object_or_404(Blog, id=self.kwargs['blog_id'])
+        cache.delete('blog:' + self.kwargs['blog_id'] + '::10')
         return super(CreatePost, self).form_valid(form)
 
     def get_success_url(self):
@@ -203,6 +219,11 @@ class UpdatePost(UpdateView):
         else:
             return redirect('blog:post_update_forbidden', blog_id=self.kwargs['blog_id'], post_id=self.kwargs['post_id'])
 
+    def form_valid(self, form):
+        cache.delete('blog:' + self.kwargs['blog_id'] + '::10')
+        return super(UpdatePost, self).form_valid(form)
+
+
 
 class PostUpdateForbidden(TemplateView):
     template_name = 'blog/post_update_forbidden.html'
@@ -220,6 +241,7 @@ class DeletePost(DeleteView):
     template_name = 'blog/delete_post.html'
 
     def get_success_url(self):
+        cache.delete('blog:' + self.kwargs['blog_id'] + '::10')
         return reverse('blog:show_blog', kwargs={'blog_id': self.kwargs['blog_id']})
 
     def dispatch(self, request, blog_id=None, post_id=None, *args, **kwargs):
