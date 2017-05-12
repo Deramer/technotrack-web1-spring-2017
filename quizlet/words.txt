@@ -1,89 +1,91 @@
-﻿obvious
-очевидный, кажущийся, мнимый
-1. apparent
-2. evident
-result from
-возникать, происходить, появиться как результат, следствие чего-то
-1. arise from
-2. stem from
-take care of
-предусматривать, принимать меры
-1. provide
-be attributed to
-объясняться, вызываться чем-л., быть обусловленным
-1. be ascribed to
-2. be assigned to
-subsequent
-вытекающий из этого; последующий, дальнейший
-1. further
-2. followed by
-3. consequent
-disregard
-пренебрегать
-1. neglect
-2. ignore
-reduce
-уменьшать(ся)
-1. decrease
-2. diminish
-3. lessen
-determine
-определять
-1. define
-remove
-устранять, исключать(мат)
-1. avoid
-2. eliminate
-precise
-точный
-1. exact
-2. accurate
-obtain
-достигать, получать
-1. achieve
-2. attain
-3. gain
-4. reach
-affect
-влиять на, воздействовать на
-1. influence
-2. have an impact
-effect (noun)
-воздействие; явление, эффект
-1. influence
-2. exposure
-3. phenomenon
-effect (verb)
-осуществлять
-1. put into effect
-2. put into practice
-thorough
-глубокий, основательный, тщательный
-1. profound
-2. careful
-3. deep
-4. detailed
-concise
-краткий, сжатый
-1. brief
-2. condensed
-3. compressed
-4. contracted
-technique
-метод, методика, способ, приём, техника выполнения чего-либо
-1. method
-2. procedure
-3. approach
-apply
-применять, употреблять, использовать
-1. employ
-2. utilize
-3. use
-4. to make use of
-concept
-понятие, представление
-1. conception
-2. notion
-attempt
-попытка, усилие
-1. endeavour
+﻿require
+требовать
+1. call for
+2. need
+3. demand
+pertinent
+подxодящий, соответствующий; свойственный, уместный
+1. relevant
+propose
+предлагать
+1. propose
+2. offer
+supply with
+снабжать, обеспечивать
+1. fit with
+2. equip with
+3. provide with
+entirely
+совершенно, полностью
+1. completely
+2. quite
+adequate
+соответствующий, достаточный, надлежащий
+1. appropriate
+2. proper
+3. sufficient
+obey
+подчиняться, соблюдать
+1. observe
+2. follow
+aim
+цель
+1. goal
+2. objective
+3. object
+4. purpose
+encounter
+встречаться с, сталкиваться с
+1. be confronted with
+2. come across
+3. meet
+4. face smth = be faced with
+5. be found
+involved (right definition)
+данный (рассматриваемый)
+1. concerned
+treat
+обрабатывать (материалы)
+1. process
+2. handle
+deduce
+выводить, получать
+1. derive
+peculiar to
+характерный для
+1. characteristic of
+2. representative of
+3. typical of
+assume
+предполагать, допускать
+1. presume
+2. expect
+due to
+благодаря, из-за
+1. because of
+2. in view of
+3. on account of
+4. by virtue of
+5. thanks to
+6. owing to
+exclude
+исключать
+1. rule out
+include
+включать
+1. insert
+2. incorporate
+complete
+осуществлять, выполнять, завершать
+1. accomplish
+2. fulfil
+3. carry out
+confine
+ограничивать
+1. limit
+2. restrict
+be composed of
+состоять из
+1. contain
+2. consist of
+3. comprise

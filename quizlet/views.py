@@ -12,6 +12,10 @@ class IndexView(TemplateView):
     template_name = 'quizlet/index.html'
     logger = logging.getLogger('debug')
 
+    def dispatch_back(self, request, *args, **kwargs):
+        self.create(*args, **kwargs)
+        return super(IndexView, self).dispatch(request, *args, **kwargs)
+
     def create(self, *args, **kwargs):
         f = open('quizlet/words.txt', 'r')
         base_word = None
@@ -34,14 +38,14 @@ class IndexView(TemplateView):
                 else:
                     trans = Translation(translation=line)
                     trans.save()
-                    word = Word(set_num=1, word=base_word, translation = trans)
+                    word = Word(set_num=2, word=base_word, translation = trans)
                     word.save()
                     syn = [word,]
             else:
-                word = Word(set_num=1, word=line[2:].strip(), translation=trans)
+                word = Word(set_num=2, word=line[2:].strip(), translation=trans)
                 word.save()
                 syn.append(word)
-        return super(IndexView, self).dispatch(request, *args, **kwargs)
+        return None
 
 
 class RefreshView(TemplateView):
@@ -54,7 +58,7 @@ class RefreshView(TemplateView):
         context['set_num'] = self.request.GET['set_num']
         if self.request.GET.get('id', None) is None:
             if self.request.GET['lang'] == 'ru':
-                trans = context['trans'] = Translation.objects.order_by('?')[0]
+                trans = context['trans'] = Translation.objects.filter(set_num=2).order_by('?')[0]
                 context['words'] = trans.word_set.all()
         else:
             trans = Translation.objects.get(id=int(self.request.GET['id']))
@@ -63,7 +67,7 @@ class RefreshView(TemplateView):
             self.logger.debug(self.request.GET.getlist('answer'))
             self.logger.debug(words)
             if (words == set(self.request.GET.getlist('answer'))):
-                trans = context['trans'] = Translation.objects.all()[randint(0, Translation.objects.count()-1)]
+                trans = context['trans'] = Translation.objects.all().filter(set_num=2)[randint(0, Translation.objects.filter(set_num=2).count()-1)]
                 context['words'] = trans.word_set.all()
                 return context
             else:

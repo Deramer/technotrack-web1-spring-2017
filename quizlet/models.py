@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Translation(models.Model):
+    set_num = models.IntegerField()
     translation = models.CharField(max_length=255)
 
 class Word(models.Model):
