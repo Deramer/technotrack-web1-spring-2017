@@ -5,6 +5,8 @@ from django.contrib.contenttypes.models import ContentType
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+from blog.managers import PostQuerySet
+
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
@@ -50,6 +52,9 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     likes_num = models.IntegerField(blank=True, default=0)
     likes = GenericRelation(GenericLike)
+    is_published = models.BooleanField(default=True)
+
+    objects = PostQuerySet.as_manager()
 
     def __str__(self):
         return self.title

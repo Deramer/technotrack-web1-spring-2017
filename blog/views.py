@@ -83,13 +83,13 @@ class PostList(ListView):
         except (KeyError, ValueError):
             pass
         if self.threshold == 10 and 'search' not in self.request.GET:
-            cache_key = 'blog:' + self.kwargs['blog_id'] + '::10'
+            cache_key = 'blog:' + self.kwargs['blog_id'] + '::10:' + str(self.request.user.id)
             posts = cache.get(cache_key)
         else:
             posts = None
         if posts is not None:
             return posts
-        posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+        posts = Post.objects.for_user(self.request.user).filter(blog_id=self.kwargs['blog_id'])
         posts = posts.annotate(Count('comment')).prefetch_related('creator')
         if 'search' in self.request.GET:
             posts = posts.filter(title__icontains = self.request.GET['search'])
@@ -108,13 +108,13 @@ class PostList(ListView):
             slikes_cache_key = 'slikes:' + self.kwargs['blog_id'] + ':' + str(self.request.user.id)
             slikes = cache.get(slikes_cache_key)
             if slikes is None:
-                slikes_posts = Post.objects.filter(blog_id=self.kwargs['blog_id'])
+                slikes_posts = Post.objects.for_user(self.request.user).filter(blog_id=self.kwargs['blog_id'])
                 slikes_posts = slikes_posts.filter(likes__user_id__in = self.request.user.follows.all())
                 slikes_posts = slikes_posts.annotate(slikes=Sum('likes__status'))
                 slikes = {}
                 for i, post in enumerate(slikes_posts):
                     slikes[post.id] = slikes_posts[i].slikes
-                cache.set(slikes_cache_key, slikes, 113)
+                cache.set(slikes_cache_key, slikes, 13)
             context['slikes'] = slikes
         if self.request.user.is_authenticated():
             query = """SELECT Post.id AS id, coalesce(sum(Gl3.status), 0) AS clike
@@ -128,7 +128,7 @@ class PostList(ListView):
                     INNER JOIN Blog_genericLike AS Gl3 
                         ON (Users_list.user_id = Gl3.user_id AND Gl3.user_id != %s AND Gl3.content_type_id = %s)
                     RIGHT JOIN Blog_post AS Post ON (Post.id = Gl3.object_id)
-                    WHERE Post.blog_id = %s
+                    WHERE Post.blog_id = %s AND (Post.is_published OR Post.creator_id = %s)
                     GROUP BY Post.id
                     ORDER BY updated_at DESC
                     LIMIT %s;
@@ -143,6 +143,7 @@ class PostList(ListView):
                     self.request.user.id,
                     post_cont_type,
                     self.kwargs['blog_id'],
+                    self.request.user.id,
                     self.threshold,
             ]
             res = Post.objects.raw(query, params)
@@ -160,11 +161,14 @@ class PostView(DetailView):
     pk_url_kwarg = 'post_id'
     template_name = 'blog/show_post.html'
 
+    def get_queryset(self):
+        return super(PostView, self).get_queryset().select_related('creator')
+
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         context['blog'] = get_object_or_404(Blog, id=self.kwargs['blog_id'])
         post = get_object_or_404(Post, id=self.kwargs['post_id'])
-        context['comments'] = Comment.objects.filter(post_id=self.kwargs['post_id'])
+        context['comments'] = Comment.objects.filter(post_id=self.kwargs['post_id']).select_related('creator')
         context['post_ct_id'] = ContentType.objects.get_for_model(Post).id
         context['comment_ct_id'] = ContentType.objects.get_for_model(Comment).id
         return context
@@ -187,7 +191,7 @@ class CreateBlog(CreateView):
 @method_decorator(login_required, name='dispatch')
 class CreatePost(CreateView):
     model = Post
-    fields = ['title', 'text',]
+    fields = ['title', 'text', 'is_published']
     template_name = 'blog/create_post.html'
 
     def form_valid(self, form):
@@ -204,7 +208,7 @@ class CreatePost(CreateView):
 class UpdatePost(UpdateView):
     model = Post
     pk_url_kwarg = 'post_id'
-    fields = ['title', 'text',]
+    fields = ['title', 'text', 'is_published']
     template_name = 'blog/update_post.html'
 
     def get_success_url(self):

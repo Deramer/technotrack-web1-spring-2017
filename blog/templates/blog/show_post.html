@@ -2,6 +2,7 @@
 {% load mptt_tags %}
 {% load blog_extras %}
 {% load static %}
+{% load cache %}
 
 {% block add_css %}
 <link rel='stylesheet' href='{% static 'blog/css/comments.css' %}'>
@@ -45,6 +46,7 @@
 		<p id='post-{{ post.id }}-reply' class='post-reply js-reply'>Reply</p>
 	</div>
 	<h3>Comments</h3>
+	{% cache 5 'post' post.id %}
 	{% if comments %}
 	{% recursetree comments %}
 		<div>
@@ -94,6 +96,7 @@
 	{% else %}
 		<p>There're no comments yet. Be the first to add!</p>
 	{% endif %}
+	{% endcache %}
 {% else %}
 	<p>Post is not available</p>
 {% endif %}
